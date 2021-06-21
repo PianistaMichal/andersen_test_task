@@ -6,6 +6,11 @@ namespace App\DepositWithdrawProcessor\Model;
 
 use MyCLabs\Enum\Enum;
 
+/**
+ * @method static OperationCurrency EUR()
+ * @method static OperationCurrency USD()
+ * @method static OperationCurrency JPY()
+ */
 class OperationCurrency extends Enum
 {
     private const EUR = 'EUR';

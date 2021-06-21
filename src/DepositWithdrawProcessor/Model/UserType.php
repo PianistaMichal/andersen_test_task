@@ -6,6 +6,10 @@ namespace App\DepositWithdrawProcessor\Model;
 
 use MyCLabs\Enum\Enum;
 
+/**
+ * @method static UserType PRIVATE()
+ * @method static UserType BUSINESS()
+ */
 class UserType extends Enum
 {
     private const PRIVATE = 'PRIVATE';

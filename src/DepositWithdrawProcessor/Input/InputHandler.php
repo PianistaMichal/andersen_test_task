@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Input;
 
-use App\DepositWithdrawProcessor\Model\InputElementDTO;
+use App\DepositWithdrawProcessor\Model\UserOperationDTO;
 
 interface InputHandler
 {
     /**
-     * @return InputElementDTO[]
+     * @return UserOperationDTO[]
      */
     public function getData(): array;
 }

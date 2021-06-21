@@ -6,6 +6,10 @@ namespace App\DepositWithdrawProcessor\Model;
 
 use MyCLabs\Enum\Enum;
 
+/**
+ * @method static DepositType WITHDRAW()
+ * @method static DepositType DEPOSIT()
+ */
 class DepositType extends Enum
 {
     private const WITHDRAW = 'WITHDRAW';
