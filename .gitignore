@@ -1,5 +1,7 @@
 vendor/
 phpunit.xml
 composer.lock
-bin/
+bin/*
+!bin/console
+.idea/
 .phpunit.result.cache

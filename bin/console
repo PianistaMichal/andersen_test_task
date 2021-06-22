@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+
+use App\Application;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+$container = new ContainerBuilder();
+// Load container configuration
+$loader = new YamlFileLoader($container, new FileLocator());
+$loader->load(__DIR__ . '/../config/services.yml');
+
+// Compile container
+$container->compile();
+
+// Start the console application.
+exit($container->get(Application::class)->run());
