@@ -8,10 +8,9 @@ use App\DepositWithdrawProcessor\Model\UserOperationDTO;
 class DepositWithdrawProcessorCommandValidator
 {
     /**
-     * @param UserOperationDTO $inputElementDTO
      * @return string[]
      */
-    public function validate(UserOperationDTO $inputElementDTO): array {
+    public function validate(UserOperationDTO $userOperationDTO): array {
 
     }
 }

@@ -8,5 +8,5 @@ use App\DepositWithdrawProcessor\Model\UserOperationDTO;
 
 interface FeeCalculator
 {
-    public function calculateFeeForTransaction(UserOperationDTO $inputElementDTO): float;
+    public function calculateFeeForTransaction(UserOperationDTO $userOperationDTO): float;
 }

@@ -11,5 +11,5 @@ interface InputHandler
     /**
      * @return UserOperationDTO[]
      */
-    public function getData(): array;
+    public function getData(string $streamName): iterable;
 }
