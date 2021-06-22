@@ -1,27 +1,8 @@
 {
+    "name": "paysera/commission-task-skeleton",
+    "description": "Skeleton for Paysera recruitment task",
+    "keywords": [],
     "type": "project",
-    "license": "proprietary",
-    "minimum-stability": "stable",
-    "prefer-stable": true,
-    "require": {
-        "php": ">=7.4",
-        "ext-ctype": "*",
-        "ext-iconv": "*",
-        "myclabs/php-enum": "^1.8",
-        "symfony/console": "5.3.*",
-        "symfony/dotenv": "5.3.*",
-        "symfony/flex": "^1.3.1",
-        "symfony/framework-bundle": "5.3.*",
-        "symfony/runtime": "5.3.*",
-        "symfony/yaml": "5.3.*"
-    },
-    "config": {
-        "optimize-autoloader": true,
-        "preferred-install": {
-            "*": "dist"
-        },
-        "sort-packages": true
-    },
     "autoload": {
         "psr-4": {
             "App\\": "src/"
@@ -32,29 +13,23 @@
             "App\\Tests\\": "tests/"
         }
     },
-    "replace": {
-        "symfony/polyfill-ctype": "*",
-        "symfony/polyfill-iconv": "*",
-        "symfony/polyfill-php72": "*"
+    "require": {
+        "php": ">=7.4",
+        "ext-bcmath": "*",
+        "myclabs/php-enum": "^1.8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0",
+        "friendsofphp/php-cs-fixer": "^2.16"
+    },
+    "config": {
+        "sort-packages": true,
+        "bin-dir": "bin"
     },
     "scripts": {
-        "auto-scripts": {
-            "cache:clear": "symfony-cmd"
-        },
-        "post-install-cmd": [
-            "@auto-scripts"
-        ],
-        "post-update-cmd": [
-            "@auto-scripts"
-        ]
-    },
-    "conflict": {
-        "symfony/symfony": "*"
-    },
-    "extra": {
-        "symfony": {
-            "allow-contrib": false,
-            "require": "5.3.*"
-        }
+        "phpunit": "phpunit",
+        "fix-cs": "php-cs-fixer fix",
+        "test-cs": "php-cs-fixer fix --dry-run -v",
+        "test": ["@phpunit", "@test-cs"]
     }
 }
