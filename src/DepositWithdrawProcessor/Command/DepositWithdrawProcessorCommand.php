@@ -5,7 +5,7 @@ namespace App\DepositWithdrawProcessor\Command;
 
 use App\DepositWithdrawProcessor\Calculator\FeeCalculator;
 use App\DepositWithdrawProcessor\Command\Validator\DepositWithdrawProcessorCommandValidator;
-use App\DepositWithdrawProcessor\Command\Validator\ValidationException;
+use App\DepositWithdrawProcessor\Command\Validator\Exception\ValidationException;
 use App\DepositWithdrawProcessor\Input\InputHandler;
 use App\DepositWithdrawProcessor\Output\OutputHandler;
 use Symfony\Component\Console\Command\Command;

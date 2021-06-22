@@ -16,7 +16,11 @@
     "require": {
         "php": ">=7.4",
         "ext-bcmath": "*",
-        "myclabs/php-enum": "^1.8"
+        "myclabs/php-enum": "^1.8",
+        "symfony/config": "^5.3",
+        "symfony/console": "^5.3",
+        "symfony/dependency-injection": "^5.3",
+        "symfony/yaml": "^5.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.0",

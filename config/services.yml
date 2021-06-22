@@ -1,0 +1,26 @@
+services:
+  _defaults:
+    autowire: true
+    public: false
+
+  App\:
+    resource: '../src/*'
+    exclude: ['../src/*/{DependencyInjection,Model,Tests,Kernel.php}', '../src/**/*Exception.php']
+
+  _instanceof:
+    Symfony\Component\Console\Command\Command:
+      tags: [ 'command' ]
+
+  App\Application:
+    public: true
+    arguments:
+      - !tagged_iterator command
+
+  App\DepositWithdrawProcessor\Calculator\FeeCalculator: '@App\DepositWithdrawProcessor\Calculator\BasicFeeCalculator'
+  App\DepositWithdrawProcessor\Input\InputHandler: '@App\DepositWithdrawProcessor\Input\CsvInputHandler'
+  App\DepositWithdrawProcessor\Output\OutputHandler: '@App\DepositWithdrawProcessor\Output\StandardOutputHandler'
+  App\DepositWithdrawProcessor\Storage\UserOperationRepository: '@App\DepositWithdrawProcessor\Storage\InMemoryUserOperationRepository'
+  App\SharedKernel\ExchangeCalculator\ExchangeCalculator: '@App\SharedKernel\ExchangeCalculator\ApiExchangeCalculator'
+  App\SharedKernel\Math:
+    arguments:
+      - 2
