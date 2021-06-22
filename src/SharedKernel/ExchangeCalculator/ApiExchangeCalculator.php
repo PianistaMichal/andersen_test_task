@@ -9,8 +9,9 @@ use App\DepositWithdrawProcessor\Model\OperationCurrency;
 class ApiExchangeCalculator implements ExchangeCalculator
 {
 
-    public function getExchangeRatioForCurrencies(OperationCurrency $firstCurrency, OperationCurrency $secondCurrency): float
-    {
-
+    public function getExchangeRatioForCurrencies(
+        OperationCurrency $firstCurrency,
+        OperationCurrency $secondCurrency
+    ): float {
     }
 }

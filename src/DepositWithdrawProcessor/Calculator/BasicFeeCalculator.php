@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Calculator;
@@ -6,8 +7,8 @@ namespace App\DepositWithdrawProcessor\Calculator;
 use App\DepositWithdrawProcessor\Calculator\Exception\NoHandlerForDepositTypeException;
 use App\DepositWithdrawProcessor\Calculator\Exception\NoHandlerForUserTypeException;
 use App\DepositWithdrawProcessor\Model\DepositType;
-use App\DepositWithdrawProcessor\Model\UserOperationDTO;
 use App\DepositWithdrawProcessor\Model\OperationCurrency;
+use App\DepositWithdrawProcessor\Model\UserOperationDTO;
 use App\DepositWithdrawProcessor\Model\UserType;
 use App\DepositWithdrawProcessor\Storage\UserOperationRepository;
 use App\SharedKernel\ExchangeCalculator\ExchangeCalculator;
@@ -23,17 +24,19 @@ class BasicFeeCalculator implements FeeCalculator
     private ExchangeCalculator $exchangeCalculator;
     private UserOperationRepository $depositWithdrawRepository;
 
-    public function __construct(ExchangeCalculator $exchangeCalculator, UserOperationRepository $depositWithdrawRepository)
-    {
+    public function __construct(
+        ExchangeCalculator $exchangeCalculator,
+        UserOperationRepository $depositWithdrawRepository
+    ) {
         $this->exchangeCalculator = $exchangeCalculator;
         $this->depositWithdrawRepository = $depositWithdrawRepository;
     }
 
     public function calculateFeeForTransaction(UserOperationDTO $userOperationDTO): float
     {
-        if($userOperationDTO->getDepositType()->equals(DepositType::WITHDRAW())) {
+        if ($userOperationDTO->getDepositType()->equals(DepositType::WITHDRAW())) {
             return $this->calculateForDeposit($userOperationDTO);
-        } else if($userOperationDTO->getDepositType()->equals(DepositType::DEPOSIT())) {
+        } elseif ($userOperationDTO->getDepositType()->equals(DepositType::DEPOSIT())) {
             return $this->calculateForWithdraw($userOperationDTO);
         }
 
@@ -42,7 +45,13 @@ class BasicFeeCalculator implements FeeCalculator
         throw new NoHandlerForDepositTypeException($userOperationDTO->getDepositType());
     }
 
-    private function calculateForWithdraw(UserOperationDTO $userOperationDTO): float {
+    private function calculateForDeposit(UserOperationDTO $userOperationDTO): float
+    {
+        return $userOperationDTO * self::DEPOSIT_BASIC_CHARGE;
+    }
+
+    private function calculateForWithdraw(UserOperationDTO $userOperationDTO): float
+    {
         if ($userOperationDTO->getUserType()->equals(UserType::BUSINESS())) {
             return $userOperationDTO * self::WITHDRAW_BUSINESS_BASIC_CHARGE;
         } elseif ($userOperationDTO->getUserType()->equals(UserType::PRIVATE())) {
@@ -52,20 +61,25 @@ class BasicFeeCalculator implements FeeCalculator
         throw new NoHandlerForUserTypeException($userOperationDTO->getUserType());
     }
 
-    private function calculateForDeposit(UserOperationDTO $userOperationDTO): float {
-        return $userOperationDTO * self::DEPOSIT_BASIC_CHARGE;
-    }
-
-    private function calculateForWithdrawAndPrivate(UserOperationDTO $userOperationDTO): float {
-        $userOperations = $this->depositWithdrawRepository->findAllCreatedAtBetweenAndDepositTypeWithdrawAndUserId(new DateTime('previous monday'), new \DateTime('next sunday'), $userOperationDTO->getUserId());
+    private function calculateForWithdrawAndPrivate(UserOperationDTO $userOperationDTO): float
+    {
+        $userOperations = $this->depositWithdrawRepository->findAllCreatedAtBetweenAndDepositTypeWithdrawAndUserId(
+            new DateTime('previous monday'),
+            new DateTime('next sunday'),
+            $userOperationDTO->getUserId()
+        );
 
         $moneyWithdrawnFromPrevious = 0;
         foreach ($userOperations as $userOperation) {
-            $moneyWithdrawnFromPrevious += $userOperation->getOperationAmount() * $this->exchangeCalculator->getExchangeRatioForCurrencies($userOperation->getOperationCurrency(), OperationCurrency::EUR());
+            $moneyWithdrawnFromPrevious += $userOperation->getOperationAmount(
+                ) * $this->exchangeCalculator->getExchangeRatioForCurrencies(
+                    $userOperation->getOperationCurrency(),
+                    OperationCurrency::EUR()
+                );
         }
 
         $commissionFee = 0;
-        if(count($userOperations) < 3) {
+        if (count($userOperations) < 3) {
             $allMoneyWithdrawn = $moneyWithdrawnFromPrevious + $userOperationDTO->getOperationAmount();
             /**
              * For example:
@@ -77,9 +91,10 @@ class BasicFeeCalculator implements FeeCalculator
              * If current operation is 200 EUR and money crossing threshold is still 300 EUR
              * We fee all money from current operation
              */
-            if($allMoneyWithdrawn > self::WITHDRAW_PRIVATE_BASIC_THRESHOLD) {
+            if ($allMoneyWithdrawn > self::WITHDRAW_PRIVATE_BASIC_THRESHOLD) {
                 $moneyWithdrawnCrossingThreshold = $allMoneyWithdrawn - self::WITHDRAW_PRIVATE_BASIC_THRESHOLD;
-                $moneyToGetCommissionFee = $moneyWithdrawnCrossingThreshold > $userOperationDTO->getOperationAmount() ? $userOperationDTO->getOperationAmount() : $moneyWithdrawnCrossingThreshold;
+                $moneyToGetCommissionFee = $moneyWithdrawnCrossingThreshold > $userOperationDTO->getOperationAmount(
+                ) ? $userOperationDTO->getOperationAmount() : $moneyWithdrawnCrossingThreshold;
                 $commissionFee = $moneyToGetCommissionFee * self::WITHDRAW_PRIVATE_BASIC_CHARGE;
             }
         } else {

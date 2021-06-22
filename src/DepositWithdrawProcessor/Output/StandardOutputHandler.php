@@ -8,7 +8,8 @@ class StandardOutputHandler implements OutputHandler
 {
     private string $lines;
 
-    public function __constructor() {
+    public function __constructor()
+    {
         $this->lines = "";
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Command\Validator;
@@ -10,7 +11,7 @@ class DepositWithdrawProcessorCommandValidator
     /**
      * @return string[]
      */
-    public function validate(UserOperationDTO $userOperationDTO): array {
-
+    public function validate(UserOperationDTO $userOperationDTO): array
+    {
     }
 }

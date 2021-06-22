@@ -7,5 +7,6 @@ namespace App\DepositWithdrawProcessor\Output;
 interface OutputHandler
 {
     public function addOutputData(string $value): void;
+
     public function flushDataToOutputStream(): void;
 }

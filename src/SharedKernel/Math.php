@@ -6,7 +6,7 @@ namespace App\SharedKernel;
 
 class Math
 {
-    private $scale;
+    private int $scale;
 
     public function __construct(int $scale)
     {

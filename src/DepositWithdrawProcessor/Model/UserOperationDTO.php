@@ -15,8 +15,14 @@ class UserOperationDTO
     private float $operationAmount;
     private OperationCurrency $operationCurrency;
 
-    public function __construct(DateTime $createdAt, int $userId, UserType $userType, DepositType $depositType, float $operationAmount, OperationCurrency $operationCurrency)
-    {
+    public function __construct(
+        DateTime $createdAt,
+        int $userId,
+        UserType $userType,
+        DepositType $depositType,
+        float $operationAmount,
+        OperationCurrency $operationCurrency
+    ) {
         $this->createdAt = $createdAt;
         $this->userId = $userId;
         $this->userType = $userType;

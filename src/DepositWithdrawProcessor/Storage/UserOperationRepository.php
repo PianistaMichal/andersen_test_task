@@ -12,7 +12,11 @@ interface UserOperationRepository
     /**
      * @return UserOperationDTO[]
      */
-    public function findAllCreatedAtBetweenAndDepositTypeWithdrawAndUserId(DateTime $firstDate, DateTime $secondDate, int $userId): array;
+    public function findAllCreatedAtBetweenAndDepositTypeWithdrawAndUserId(
+        DateTime $firstDate,
+        DateTime $secondDate,
+        int $userId
+    ): array;
 
     public function saveUserOperation(UserOperationDTO $userOperationDTO): void;
 }

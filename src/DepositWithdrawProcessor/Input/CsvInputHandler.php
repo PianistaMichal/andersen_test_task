@@ -24,7 +24,14 @@ class CsvInputHandler implements InputHandler
         }
         $data = fgetcsv($handle);
         foreach ($data as $element) {
-            yield new UserOperationDTO(new DateTime($element[0]), $element[1], UserType::from(strtoupper($element[2])), DepositType::from(strtoupper($element[3])), (float)$element[4], OperationCurrency::from(strtoupper($element[5])));
+            yield new UserOperationDTO(
+                new DateTime($element[0]),
+                $element[1],
+                UserType::from(strtoupper($element[2])),
+                DepositType::from(strtoupper($element[3])),
+                (float)$element[4],
+                OperationCurrency::from(strtoupper($element[5]))
+            );
         }
     }
 }

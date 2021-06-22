@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Command;
@@ -12,7 +13,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DepositWithdrawProcessorCommand extends Command {
+class DepositWithdrawProcessorCommand extends Command
+{
 
     protected static $defaultName = 'app:deposit_withdraw_processor_command';
 
@@ -21,8 +23,12 @@ class DepositWithdrawProcessorCommand extends Command {
     private DepositWithdrawProcessorCommandValidator $commandValidator;
     private FeeCalculator $feeCalculator;
 
-    public function __construct(InputHandler $inputHandler, OutputHandler $outputHandler, DepositWithdrawProcessorCommandValidator $commandValidator, FeeCalculator $feeCalculator)
-    {
+    public function __construct(
+        InputHandler $inputHandler,
+        OutputHandler $outputHandler,
+        DepositWithdrawProcessorCommandValidator $commandValidator,
+        FeeCalculator $feeCalculator
+    ) {
         $this->inputHandler = $inputHandler;
         $this->outputHandler = $outputHandler;
         $this->commandValidator = $commandValidator;
