@@ -12,7 +12,7 @@ class InMemoryUserOperationRepository implements UserOperationRepository
 {
     private array $userOperations;
 
-    public function __constructor()
+    public function __construct()
     {
         $this->userOperations = [];
     }

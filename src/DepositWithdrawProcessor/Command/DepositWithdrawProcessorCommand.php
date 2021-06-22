@@ -10,6 +10,7 @@ use App\DepositWithdrawProcessor\Command\Validator\Exception\ValidationException
 use App\DepositWithdrawProcessor\Input\InputHandler;
 use App\DepositWithdrawProcessor\Output\OutputHandler;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -39,12 +40,13 @@ class DepositWithdrawProcessorCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Processed input to handle deposit and withdraw operations and return fees');
+            ->setDescription('Processed input to handle deposit and withdraw operations and return fees')
+            ->addArgument('streamPath', InputArgument::REQUIRED, 'Stream path');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $inputStreamPath = '';
+        $inputStreamPath = $input->getArgument('streamPath');
         //TODO: validation in correct way
         $inputElements = [];
         foreach ($this->inputHandler->getData($inputStreamPath) as $id => $element) {
@@ -57,7 +59,7 @@ class DepositWithdrawProcessorCommand extends Command
 
         foreach ($inputElements as $element) {
             $feeToPay = $this->feeCalculator->calculateFeeForTransaction($element);
-            $this->outputHandler->addOutputData((string)$feeToPay);
+            $this->outputHandler->addOutputData($feeToPay);
         }
         $this->outputHandler->flushDataToOutputStream();
 

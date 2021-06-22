@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\SharedKernel\ExchangeCalculator;
 
-use App\DepositWithdrawProcessor\Model\OperationCurrency;
+use App\DepositWithdrawProcessor\Model\Currency;
 
 interface ExchangeCalculator
 {
-    public function getExchangeRatioForCurrencies(
-        OperationCurrency $firstCurrency,
-        OperationCurrency $secondCurrency
-    ): float;
+    public function getAmountFromCurrencyToBaseCurrency(string $currencyAmount, Currency $currencyFrom): string;
+    public function getAmountFromBaseCurrencyToGivenCurrency(string $currencyAmount, Currency $currencyTo): string;
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Model;
 
+use App\SharedKernel\Number\ExchangeableNumber;
 use DateTime;
 
 class UserOperationDTO
@@ -12,22 +13,22 @@ class UserOperationDTO
     private int $userId;
     private UserType $userType;
     private DepositType $depositType;
-    private float $operationAmount;
-    private OperationCurrency $operationCurrency;
+    private ExchangeableNumber $exchangeableNumber;
+    private Currency $operationCurrency;
 
     public function __construct(
         DateTime $createdAt,
         int $userId,
         UserType $userType,
         DepositType $depositType,
-        float $operationAmount,
-        OperationCurrency $operationCurrency
+        ExchangeableNumber $exchangeableNumber,
+        Currency $operationCurrency
     ) {
         $this->createdAt = $createdAt;
         $this->userId = $userId;
         $this->userType = $userType;
         $this->depositType = $depositType;
-        $this->operationAmount = $operationAmount;
+        $this->exchangeableNumber = $exchangeableNumber;
         $this->operationCurrency = $operationCurrency;
     }
 
@@ -51,12 +52,12 @@ class UserOperationDTO
         return $this->depositType;
     }
 
-    public function getOperationAmount(): float
+    public function getExchangeableNumber(): ExchangeableNumber
     {
-        return $this->operationAmount;
+        return $this->exchangeableNumber;
     }
 
-    public function getOperationCurrency(): OperationCurrency
+    public function getOperationCurrency(): Currency
     {
         return $this->operationCurrency;
     }

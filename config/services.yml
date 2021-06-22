@@ -16,11 +16,28 @@ services:
     arguments:
       - !tagged_iterator command
 
+  App\SharedKernel\ExchangeCalculator\Strategy\ExchangeRatesApiInformation:
+    arguments:
+      $apiToken: 'ded5d4bea62d9df637dd9f8086c1c9b8'
+      $baseCurrency: 'base.currency'
+
+  App\SharedKernel\Number\ExchangeableNumberFactory:
+    arguments:
+      $baseCurrency: 'base.currency'
+
+  base_currency:
+    alias: App\DepositWithdrawProcessor\Model\Currency
+    arguments: ['EUR']
+
   App\DepositWithdrawProcessor\Calculator\FeeCalculator: '@App\DepositWithdrawProcessor\Calculator\BasicFeeCalculator'
   App\DepositWithdrawProcessor\Input\InputHandler: '@App\DepositWithdrawProcessor\Input\CsvInputHandler'
   App\DepositWithdrawProcessor\Output\OutputHandler: '@App\DepositWithdrawProcessor\Output\StandardOutputHandler'
   App\DepositWithdrawProcessor\Storage\UserOperationRepository: '@App\DepositWithdrawProcessor\Storage\InMemoryUserOperationRepository'
-  App\SharedKernel\ExchangeCalculator\ExchangeCalculator: '@App\SharedKernel\ExchangeCalculator\ApiExchangeCalculator'
+  App\SharedKernel\ExchangeCalculator\ExchangeCalculator: '@App\SharedKernel\ExchangeCalculator\CacheableExchangeCalculator'
+  App\SharedKernel\ExchangeCalculator\Strategy\ExchangeRatesInformation: '@App\SharedKernel\ExchangeCalculator\Strategy\ExchangeRatesApiInformation'
   App\SharedKernel\Math:
     arguments:
       - 2
+  GuzzleHttp\Client:
+    arguments:
+      - { 'base_uri': 'http://api.exchangeratesapi.io/v1' }

@@ -6,7 +6,7 @@ namespace App\DepositWithdrawProcessor\Input;
 
 use App\DepositWithdrawProcessor\Input\Exception\StreamOpenFailedException;
 use App\DepositWithdrawProcessor\Model\DepositType;
-use App\DepositWithdrawProcessor\Model\OperationCurrency;
+use App\DepositWithdrawProcessor\Model\Currency;
 use App\DepositWithdrawProcessor\Model\UserOperationDTO;
 use App\DepositWithdrawProcessor\Model\UserType;
 use DateTime;
@@ -22,15 +22,14 @@ class CsvInputHandler implements InputHandler
         if ($handle === false) {
             throw new StreamOpenFailedException(sprintf('File cannot be open: %s', $streamName));
         }
-        $data = fgetcsv($handle);
-        foreach ($data as $element) {
+        while (($row = fgetcsv($handle)) !== false) {
             yield new UserOperationDTO(
-                new DateTime($element[0]),
-                $element[1],
-                UserType::from(strtoupper($element[2])),
-                DepositType::from(strtoupper($element[3])),
-                (float)$element[4],
-                OperationCurrency::from(strtoupper($element[5]))
+                new DateTime($row[0]),
+                (int)$row[1],
+                UserType::from(strtoupper($row[2])),
+                DepositType::from(strtoupper($row[3])),
+                $row[4],
+                Currency::from(strtoupper($row[5]))
             );
         }
     }

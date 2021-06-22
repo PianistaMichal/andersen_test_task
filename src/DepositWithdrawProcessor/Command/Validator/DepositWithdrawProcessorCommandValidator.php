@@ -13,5 +13,6 @@ class DepositWithdrawProcessorCommandValidator
      */
     public function validate(UserOperationDTO $userOperationDTO): array
     {
+        return [];
     }
 }
