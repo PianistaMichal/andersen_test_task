@@ -46,7 +46,6 @@ class DepositWithdrawProcessorCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputStreamPath = $input->getArgument('streamPath');
-        //TODO: validation in correct way
         $inputElements = [];
         foreach ($this->inputHandler->getData($inputStreamPath) as $id => $element) {
             $errors = $this->commandValidator->validate($element);
