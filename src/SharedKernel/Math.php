@@ -42,16 +42,17 @@ class Math
     }
 
     /**
-     * Should use this function only when saving or displaying. Otherwise use functions from above
+     * Should use this function only when saving or displaying. Otherwise use functions from above.
      *
      * https://stackoverflow.com/questions/8239600/rounding-up-to-the-second-decimal-place/8239620#comment67989595_8239620
      */
     public function round(string $number): string
     {
         $offset = 0.5;
-        if ($this->scale !== 0)
+        if ($this->scale !== 0) {
             $offset /= pow(10, $this->scale);
-        $ceil = (string) round((float)$number + $offset, $this->scale, PHP_ROUND_HALF_DOWN);
+        }
+        $ceil = (string) round((float) $number + $offset, $this->scale, PHP_ROUND_HALF_DOWN);
 
         return bcadd($ceil, '0', $this->scale);
     }

@@ -56,7 +56,6 @@ class DepositWithdrawProcessorCommand extends Command
             $inputElements[] = $element;
         }
 
-
         foreach ($inputElements as $element) {
             $feeToPay = $this->feeCalculator->calculateFeeForTransaction($element);
             $this->outputHandler->addOutputData($feeToPay);
