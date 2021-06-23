@@ -14,7 +14,19 @@ class DepositWithdrawProcessorCommandTest extends TestCase
      *
      * @dataProvider data
      */
-    public function testData(array $inputData, array $expectedValues) {
+    public function testData(array $inputData, array $expectedValues): void
+    {
+        $this->writeToFile($inputData);
+
+        $output=null;
+        exec('php bin/console app:deposit_withdraw_processor_command tests/mocks/file.csv', $output);
+        for($i = 0; $i < count($expectedValues); $i++) {
+            self::assertEquals($expectedValues[$i], $output[$i]);
+        }
+    }
+
+    private function writeToFile(array $inputData): void
+    {
         $fp = fopen('tests/mocks/file.csv', 'w');
 
         foreach ($inputData as $fields) {
@@ -22,31 +34,47 @@ class DepositWithdrawProcessorCommandTest extends TestCase
         }
 
         fclose($fp);
-
-        $output=null;
-        $retval=null;
-        exec('php bin/console app:deposit_withdraw_processor_command tests/mocks/file.csv', $output, $retval);
-        for($i = 0; $i < count($expectedValues); $i++) {
-            self::assertEquals($expectedValues[$i], $output[$i]);
-        }
     }
 
     public function data():array
     {
         return [
-            'first' => [
+            'should return fee for withdraw business' => [
                 [
                     [
-                        '2015-01-01',
-                        '4',
+                        '2016-01-06',
+                        '2',
+                        'business',
+                        'withdraw',
+                        '300.00',
+                        'EUR'
+                    ]
+                ],
+                [
+                    '1.50'
+                ]
+            ],
+            'shouldReturnFeeForPrivateWithdrawFor2PreviousWithdrawsInDifferentCurrency' => [
+                [
+                    [
+                        '2016-01-04',
+                        '1',
                         'private',
                         'withdraw',
-                        '1000.00',
-                        'EUR'
+                        '500',
+                        'USD'
                     ],
                     [
-                        '2015-01-01',
-                        '4',
+                        '2016-01-06',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '30000',
+                        'JPY'
+                    ],
+                    [
+                        '2016-01-07',
+                        '1',
                         'private',
                         'withdraw',
                         '1000.00',
@@ -54,38 +82,249 @@ class DepositWithdrawProcessorCommandTest extends TestCase
                     ]
                 ],
                 [
+                    'x.xx',
                     '0.00',
-                    '3.00'
+                    'x.xx'
+                ]
+            ],
+            'shouldReturnFeeForPrivateWithdrawInCurrentCurrency' => [
+                [
+                    [
+                        '2016-01-04',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '300000',
+                        'JPY'
+                    ],
+                ],
+                [
+                    'x.xx',
+                ]
+            ],
+            'shouldReturnFreeFromFeeForWithdrawPrivateWith2PreviousWithdrawsNotExceedingThreshold' => [
+                [
+                    [
+                        '2016-01-04',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '100.00',
+                        'EUR'
+                    ],
+                    [
+                        '2016-01-05',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '200.00',
+                        'EUR'
+                    ],
+                    [
+                        '2016-01-07',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '300.00',
+                        'EUR'
+                    ]
+                ],
+                [
+                    '0.00',
+                    '0.00',
+                    '0.00'
+                ]
+            ],
+            'shouldReturnFeeForWithdrawPrivateWith3PreviousWithdrawsOneInMonday' => [
+                [
+                    [
+                        '2016-01-04',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '100.00',
+                        'EUR'
+                    ],
+                    [
+                        '2016-01-07',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '200.00',
+                        'EUR'
+                    ],
+                    [
+                        '2016-01-07',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '300.00',
+                        'EUR'
+                    ],
+
+                    [
+                        '2016-01-07',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '100.00',
+                        'EUR'
+                    ]
+                ],
+                [
+                    '0.00',
+                    '0.00',
+                    '0.00',
+                    '0.30'
+                ]
+            ],
+            'shouldReturnFeeForWithdrawPrivateWith3PreviousWithdraws' => [
+                [
+                    [
+                        '2016-01-07',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '100.00',
+                        'EUR'
+                    ],
+                    [
+                        '2016-01-07',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '200.00',
+                        'EUR'
+                    ],
+                    [
+                        '2016-01-07',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '300.00',
+                        'EUR'
+                    ],
+
+                    [
+                        '2016-01-07',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '100.00',
+                        'EUR'
+                    ]
+                ],
+                [
+                    '0.00',
+                    '0.00',
+                    '0.00',
+                    '0.30'
+                ]
+            ],
+
+            'shouldReturnFeeForDeposit' => [
+                [
+                    [
+                        '2016-01-04',
+                        '1',
+                        'private',
+                        'deposit',
+                        '1000.00',
+                        'EUR'
+                    ]
+                ],
+                [
+                    '0.30'
+                ]
+            ],
+            'shouldReturnFeeForDepositForMultipleUsersWithMultipleTransactions' => [
+                [
+                    [
+                        '2016-01-04',
+                        '1',
+                        'private',
+                        'deposit',
+                        '1000.00',
+                        'EUR',
+
+                    ],
+                    [
+                        '2016-01-04',
+                        '2',
+                        'private',
+                        'deposit',
+                        '1000.00',
+                        'EUR',
+
+                    ],
+                    [
+                        '2016-01-04',
+                        '3',
+                        'private',
+                        'deposit',
+                        '1000.00',
+                        'EUR',
+
+                    ],
+                ],
+                [
+                    '0.30',
+                    '0.30',
+                    '0.30'
+                ]
+            ],
+            'shouldReturnFeeForWithdrawForMultipleUsersWithMultipleTransactions' => [
+                [
+                    [
+                        '2016-01-04',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '100.00',
+                        'EUR'
+                    ],
+                    [
+                        '2016-01-04',
+                        '2',
+                        'private',
+                        'withdraw',
+                        '200.00',
+                        'EUR'
+                    ],
+                    [
+                        '2016-01-05',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '200.00',
+                        'EUR'
+                    ],
+                    [
+                        '2016-01-07',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '300.00',
+                        'EUR'
+                    ],
+
+                    [
+                        '2016-01-07',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '100.00',
+                        'EUR'
+                    ]
+                ],
+                [
+                    '0.00',
+                    '0.00',
+                    '0.00',
+                    '0.00',
+                    '0.30'
                 ]
             ],
         ];
-    }
-
-    public function shouldReturnFeeForWithdrawBusiness() {
-
-    }
-
-    public function shouldReturnFeeForWithdrawFor2PreviousWithdrawsInDifferentCurrency() {
-
-    }
-
-    public function shouldReturnFeeForWithdrawPrivateWith2PreviousWithdrawsExceedingThreshold() {
-
-    }
-
-    public function shouldReturnFreeFromFeeForWithdrawPrivateWith2PreviousWithdrawsNotExceedingThreshold() {
-
-    }
-
-    public function shouldReturnFeeForWithdrawPrivateWith3PreviousWithdraws() {
-
-    }
-
-    public function shouldReturnFeeForDeposit() {
-
-    }
-
-    public function shouldReturnFeeForDepositForMultipleUsersWithMultipleTransactions() {
-
     }
 }

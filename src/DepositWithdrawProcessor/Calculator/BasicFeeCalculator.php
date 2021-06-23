@@ -67,8 +67,8 @@ class BasicFeeCalculator implements FeeCalculator
     private function calculateForWithdrawAndPrivate(UserOperationDTO $userOperationDTO): ExchangeableNumber
     {
         $userOperations = $this->depositWithdrawRepository->findAllCreatedAtBetweenAndDepositTypeWithdrawAndUserId(
-            $userOperationDTO->getCreatedAt()->modify('previous monday'),
-            $userOperationDTO->getCreatedAt()->modify('next sunday'),
+            $userOperationDTO->getCreatedAt()->modify('tomorrow')->modify('previous monday'),
+            $userOperationDTO->getCreatedAt()->modify('yesterday')->modify('next sunday'),
             $userOperationDTO->getUserId()
         );
 
