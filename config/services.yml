@@ -2,7 +2,7 @@ parameters:
   base_currency: 'EUR'
   exchange_api_uri: "%env(EXCHANGE_API_URL)%"
   exchange_api_key: "%env(EXCHANGE_API_TOKEN)%"
-  math_round: "%env(MATH_ROUND)%"
+  math_round_precision: "%env(MATH_ROUND_PRECISION)%"
 
 services:
   _defaults:
@@ -48,7 +48,7 @@ services:
   App\SharedKernel\ExchangeCalculator\Strategy\ExchangeRatesInformation: '@App\SharedKernel\ExchangeCalculator\Strategy\ExchangeRatesApiInformation'
   App\SharedKernel\Math:
     arguments:
-      - '%math_round%'
+      - '%math_round_precision%'
   GuzzleHttp\Client:
     arguments:
       - { 'base_uri': '%exchange_api_uri%' }

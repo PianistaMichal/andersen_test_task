@@ -8,12 +8,12 @@ class Math
 {
     private const BASIC_SCALE_FOR_CALCULATIONS = 20;
     private int $basicScaleForCalculations;
-    private int $scale;
+    private int $roundPrecision;
 
-    public function __construct(int $scale)
+    public function __construct(int $roundPrecision)
     {
-        $this->basicScaleForCalculations = $scale + self::BASIC_SCALE_FOR_CALCULATIONS;
-        $this->scale = $scale;
+        $this->basicScaleForCalculations = $roundPrecision + self::BASIC_SCALE_FOR_CALCULATIONS;
+        $this->roundPrecision = $roundPrecision;
     }
 
     public function add(string $leftOperand, string $rightOperand): string
@@ -49,11 +49,11 @@ class Math
     public function round(string $number): string
     {
         $offset = 0.5;
-        if ($this->scale !== 0) {
-            $offset /= pow(10, $this->scale);
+        if ($this->roundPrecision !== 0) {
+            $offset /= pow(10, $this->roundPrecision);
         }
-        $ceil = (string) round((float) $number + $offset, $this->scale, PHP_ROUND_HALF_DOWN);
+        $ceil = (string) round((float) $number + $offset, $this->roundPrecision, PHP_ROUND_HALF_DOWN);
 
-        return bcadd($ceil, '0', $this->scale);
+        return bcadd($ceil, '0', $this->roundPrecision);
     }
 }
