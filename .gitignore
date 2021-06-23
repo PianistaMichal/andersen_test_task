@@ -5,3 +5,5 @@ bin/*
 !bin/console
 .idea/
 .phpunit.result.cache
+tests/mocks/*
+!tests/mocks/.gitkeep
