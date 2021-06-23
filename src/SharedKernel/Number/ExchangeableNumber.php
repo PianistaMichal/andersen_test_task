@@ -27,22 +27,22 @@ class ExchangeableNumber
 
     public function add(ExchangeableNumber $exchangeableNumber): ExchangeableNumber
     {
-        return new $this($this->exchangeCalculator, $this->math, $this->math->add($this->getCurrencyAmountInBaseCurrency(), $exchangeableNumber->getCurrencyAmountInBaseCurrency()), $this->baseCurrency);
+        return new $this($this->exchangeCalculator, $this->math, $this->baseCurrency, $this->math->add($this->getCurrencyAmountInBaseCurrency(), $exchangeableNumber->getCurrencyAmountInBaseCurrency()), $this->baseCurrency);
     }
 
     public function multiply(string $value): ExchangeableNumber
     {
-        return new $this($this->exchangeCalculator, $this->math, $this->math->multiply($this->getCurrencyAmountInCurrentCurrency(), $value), $this->currency);
+        return new $this($this->exchangeCalculator, $this->math, $this->baseCurrency, $this->math->multiply($this->getCurrencyAmountInCurrentCurrency(), $value), $this->currency);
     }
 
     public function divide(string $value): ExchangeableNumber
     {
-        return new $this($this->exchangeCalculator, $this->math, $this->math->divide($this->getCurrencyAmountInCurrentCurrency(), $value), $this->currency);
+        return new $this($this->exchangeCalculator, $this->math, $this->baseCurrency, $this->math->divide($this->getCurrencyAmountInCurrentCurrency(), $value), $this->currency);
     }
 
     public function sub(ExchangeableNumber $exchangeableNumber): ExchangeableNumber
     {
-        return new $this($this->exchangeCalculator, $this->math, $this->math->sub($this->getCurrencyAmountInBaseCurrency(), $exchangeableNumber->getCurrencyAmountInBaseCurrency()), $this->baseCurrency);
+        return new $this($this->exchangeCalculator, $this->math, $this->baseCurrency, $this->math->sub($this->getCurrencyAmountInBaseCurrency(), $exchangeableNumber->getCurrencyAmountInBaseCurrency()), $this->baseCurrency);
     }
 
     public function greaterThan(ExchangeableNumber $exchangeableNumber): bool
@@ -55,9 +55,13 @@ class ExchangeableNumber
         return $this->exchangeCalculator->getAmountFromCurrencyToBaseCurrency($this->currencyAmount, $this->currency);
     }
 
-    public function getCurrencyAmountInGivenCurrency(Currency $operationCurrency): string
+    public function getCurrencyAmountInGivenCurrency(Currency $givenCurrency): string
     {
-        return $this->exchangeCalculator->getAmountFromBaseCurrencyToGivenCurrency($this->currencyAmount, $operationCurrency);
+        if($givenCurrency->equals($this->currency)) {
+            return $this->currencyAmount;
+        }
+
+        return $this->exchangeCalculator->getAmountFromBaseCurrencyToGivenCurrency($this->getCurrencyAmountInBaseCurrency(), $givenCurrency);
     }
 
     public function getCurrencyAmountInCurrentCurrency(): string

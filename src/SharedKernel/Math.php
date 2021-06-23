@@ -43,7 +43,6 @@ class Math
      * https://www.php.net/manual/en/function.round.php#114573
      */
     public function round(string $number): string {
-        $fig = (int) str_pad('1', $this->scale, '0');
-        return (string)(ceil((float)$number * $fig) / $fig);
+        return bcadd($number, '0', $this->scale);
     }
 }

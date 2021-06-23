@@ -94,11 +94,11 @@ class BasicFeeCalculator implements FeeCalculator
             if ($allMoneyWithdrawnFromThisWeek->greaterThan($this->exchangeableNumberFactory->create(self::WITHDRAW_PRIVATE_BASIC_THRESHOLD, Currency::EUR()))) {
                 $moneyWithdrawnCrossingThreshold = $allMoneyWithdrawnFromThisWeek->sub($withdrawBasicThreshold);
                 $commissionFee = $moneyWithdrawnCrossingThreshold->greaterThan($userOperationDTO->getExchangeableNumber()) ? $userOperationDTO->getExchangeableNumber() : $moneyWithdrawnCrossingThreshold;
+                $commissionFee = $commissionFee->multiply(self::WITHDRAW_PRIVATE_BASIC_CHARGE);
             }
         } else {
             $commissionFee = $userOperationDTO->getExchangeableNumber()->multiply(self::WITHDRAW_PRIVATE_BASIC_CHARGE);
         }
-
         return $commissionFee;
     }
 }
