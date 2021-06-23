@@ -42,15 +42,13 @@ class BasicFeeCalculator implements FeeCalculator
         }
         $this->depositWithdrawRepository->saveUserOperation($userOperationDTO);
         if ($feeForTransactions !== null) {
-            return $this->exchangeableNumberFactory->create($feeForTransactions->getCurrencyAmountInGivenCurrency($userOperationDTO->getOperationCurrency()), $userOperationDTO->getOperationCurrency());
+            return $this->exchangeableNumberFactory->create(
+                $feeForTransactions->getCurrencyAmountInGivenCurrency($userOperationDTO->getOperationCurrency()),
+                $userOperationDTO->getOperationCurrency()
+            );
         }
 
         throw new NoHandlerForDepositTypeException($userOperationDTO->getDepositType());
-    }
-
-    private function calculateForDeposit(UserOperationDTO $userOperationDTO): ExchangeableNumber
-    {
-        return $userOperationDTO->getExchangeableNumber()->multiply(self::DEPOSIT_BASIC_CHARGE);
     }
 
     private function calculateForWithdraw(UserOperationDTO $userOperationDTO): ExchangeableNumber
@@ -74,9 +72,13 @@ class BasicFeeCalculator implements FeeCalculator
 
         $allMoneyWithdrawnFromThisWeek = $this->exchangeableNumberFactory->create('0', Currency::EUR());
         foreach ($userOperations as $userOperation) {
-            $allMoneyWithdrawnFromThisWeek = $allMoneyWithdrawnFromThisWeek->add($userOperation->getExchangeableNumber());
+            $allMoneyWithdrawnFromThisWeek = $allMoneyWithdrawnFromThisWeek->add(
+                $userOperation->getExchangeableNumber()
+            );
         }
-        $allMoneyWithdrawnFromThisWeek = $allMoneyWithdrawnFromThisWeek->add($userOperationDTO->getExchangeableNumber());
+        $allMoneyWithdrawnFromThisWeek = $allMoneyWithdrawnFromThisWeek->add(
+            $userOperationDTO->getExchangeableNumber()
+        );
 
         $commissionFee = $this->exchangeableNumberFactory->create('0', $userOperationDTO->getOperationCurrency());
         if (count($userOperations) < 3) {
@@ -90,10 +92,17 @@ class BasicFeeCalculator implements FeeCalculator
              * If current operation is 200 EUR and money crossing threshold is 300 EUR
              * We fee all money from current operation.
              */
-            $withdrawBasicThreshold = $this->exchangeableNumberFactory->create(self::WITHDRAW_PRIVATE_BASIC_THRESHOLD, Currency::EUR());
-            if ($allMoneyWithdrawnFromThisWeek->greaterThan($this->exchangeableNumberFactory->create(self::WITHDRAW_PRIVATE_BASIC_THRESHOLD, Currency::EUR()))) {
+            $withdrawBasicThreshold = $this->exchangeableNumberFactory->create(
+                self::WITHDRAW_PRIVATE_BASIC_THRESHOLD,
+                Currency::EUR()
+            );
+            if ($allMoneyWithdrawnFromThisWeek->greaterThan(
+                $this->exchangeableNumberFactory->create(self::WITHDRAW_PRIVATE_BASIC_THRESHOLD, Currency::EUR())
+            )) {
                 $moneyWithdrawnCrossingThreshold = $allMoneyWithdrawnFromThisWeek->sub($withdrawBasicThreshold);
-                $commissionFee = $moneyWithdrawnCrossingThreshold->greaterThan($userOperationDTO->getExchangeableNumber()) ? $userOperationDTO->getExchangeableNumber() : $moneyWithdrawnCrossingThreshold;
+                $commissionFee = $moneyWithdrawnCrossingThreshold->greaterThan(
+                    $userOperationDTO->getExchangeableNumber()
+                ) ? $userOperationDTO->getExchangeableNumber() : $moneyWithdrawnCrossingThreshold;
                 $commissionFee = $commissionFee->multiply(self::WITHDRAW_PRIVATE_BASIC_CHARGE);
             }
         } else {
@@ -101,5 +110,10 @@ class BasicFeeCalculator implements FeeCalculator
         }
 
         return $commissionFee;
+    }
+
+    private function calculateForDeposit(UserOperationDTO $userOperationDTO): ExchangeableNumber
+    {
+        return $userOperationDTO->getExchangeableNumber()->multiply(self::DEPOSIT_BASIC_CHARGE);
     }
 }

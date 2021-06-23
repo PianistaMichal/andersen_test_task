@@ -9,12 +9,50 @@ use PHPUnit\Framework\TestCase;
 class DepositWithdrawProcessorCommandTest extends TestCase
 {
     /**
-     * @param array $inputData
-     * @param array $expectedValues
-     *
+     * @test
+     */
+    public function shouldNotValidateWhenValueLowerThan0(): void
+    {
+        $this->writeToFile([[
+            '2016-01-06',
+            '2',
+            'business',
+            'withdraw',
+            '-10.00',
+            'EUR'
+        ]]);
+
+        $output=null;
+        $retval=null;
+        exec('php bin/console app:deposit_withdraw_processor_command tests/mocks/file.csv', $output, $retval);
+        self::assertNotEquals(0, $retval);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldNotValidateWhenCurrencyNotCorrect(): void
+    {
+        $this->writeToFile([[
+            '2016-01-06',
+            '2',
+            'business',
+            'withdraw',
+            '10.00',
+            'EUR123'
+        ]]);
+
+        $output=null;
+        $retval=null;
+        exec('php bin/console app:deposit_withdraw_processor_command tests/mocks/file.csv', $output, $retval);
+        self::assertNotEquals(0, $retval);
+    }
+
+    /**
+     * @test
      * @dataProvider data
      */
-    public function testData(array $inputData, array $expectedValues): void
+    public function shouldAssertFees(array $inputData, array $expectedValues): void
     {
         $this->writeToFile($inputData);
 
@@ -324,7 +362,7 @@ class DepositWithdrawProcessorCommandTest extends TestCase
                     '0.00',
                     '0.30'
                 ]
-            ],
+            ]
         ];
     }
 }

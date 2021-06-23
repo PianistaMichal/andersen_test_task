@@ -23,6 +23,12 @@ class ExchangeableNumberFactory
 
     public function create(string $currencyAmount, Currency $operationCurrency): ExchangeableNumber
     {
-        return new ExchangeableNumber($this->exchangeCalculator, $this->math, $this->baseCurrency, $currencyAmount, $operationCurrency);
+        return new ExchangeableNumber(
+            $this->exchangeCalculator,
+            $this->math,
+            $this->baseCurrency,
+            $currencyAmount,
+            $operationCurrency
+        );
     }
 }

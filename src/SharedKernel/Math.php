@@ -44,6 +44,11 @@ class Math
      */
     public function round(string $number): string
     {
-        return bcadd($number, '0', $this->scale);
+        $pow = pow(10, $this->scale);
+        $ceil = (string) ((ceil($pow * (float) $number) + ceil(
+                    $pow * (float) $number - ceil($pow * (float) $number)
+                )) / $pow);
+
+        return bcadd($ceil, '0', $this->scale);
     }
 }

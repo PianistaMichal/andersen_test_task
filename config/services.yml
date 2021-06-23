@@ -1,5 +1,5 @@
 parameters:
-  base_currency: '%env(BASE_CURRENCY)%'
+  base_currency: 'EUR'
   exchange_api_uri: "%env(EXCHANGE_API_URL)%"
   exchange_api_key: "%env(EXCHANGE_API_TOKEN)%"
   math_round: "%env(MATH_ROUND)%"
@@ -25,6 +25,10 @@ services:
   App\SharedKernel\ExchangeCalculator\Strategy\ExchangeRatesApiInformation:
     arguments:
       $apiToken: '%exchange_api_key%'
+      $baseCurrency: '@base.currency'
+
+  App\DepositWithdrawProcessor\Command\Validator\DepositWithdrawProcessorCommandValidator:
+    arguments:
       $baseCurrency: '@base.currency'
 
   App\SharedKernel\Number\ExchangeableNumberFactory:

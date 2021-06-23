@@ -22,9 +22,13 @@ class CacheableExchangeCalculator implements ExchangeCalculator
     }
 
     public function getAmountFromCurrencyToBaseCurrency(
-        string $currencyAmount, Currency $currencyFrom
+        string $currencyAmount,
+        Currency $currencyFrom
     ): string {
-        return $this->math->multiply($this->math->divide('1', $this->exchangesCache[$currencyFrom->getValue()]), $currencyAmount);
+        return $this->math->multiply(
+            $this->math->divide('1', $this->exchangesCache[$currencyFrom->getValue()]),
+            $currencyAmount
+        );
     }
 
     public function getAmountFromBaseCurrencyToGivenCurrency(string $currencyAmount, Currency $currencyTo): string
