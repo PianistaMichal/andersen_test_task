@@ -9,22 +9,22 @@ use App\SharedKernel\Number\ExchangeableNumber;
 
 class StandardOutputHandler implements OutputHandler
 {
-    private string $lines;
+    private array $lines;
     private Math $math;
 
     public function __construct(Math $math)
     {
-        $this->lines = '';
+        $this->lines = [];
         $this->math = $math;
     }
 
     public function addOutputData(ExchangeableNumber $exchangeableNumber): void
     {
-        $this->lines .= $this->math->round($exchangeableNumber->getCurrencyAmountInCurrentCurrency())."\n";
+        $this->lines[] = $this->math->round($exchangeableNumber->getCurrencyAmountInCurrentCurrency());
     }
 
     public function flushDataToOutputStream(): void
     {
-        fwrite(STDOUT, $this->lines);
+        fwrite(STDOUT, implode("\n", $this->lines));
     }
 }

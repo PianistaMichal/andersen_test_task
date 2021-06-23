@@ -27,7 +27,7 @@ class ExchangeRatesApiInformation implements ExchangeRatesInformation
         $allRates = [];
         foreach (Currency::values() as $currency) {
             $value = 1;
-            if ($currency !== Currency::EUR()->getValue()) {
+            if ($currency !== $this->baseCurrency->getValue()) {
                 $value = (string) $responseParsed['rates'][$currency->getValue()];
             }
             $allRates[$currency->getValue()] = $value;

@@ -5,6 +5,7 @@ use App\Application;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Dotenv\Dotenv;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -13,8 +14,11 @@ $container = new ContainerBuilder();
 $loader = new YamlFileLoader($container, new FileLocator());
 $loader->load(__DIR__ . '/../config/services.yml');
 
+$dotenv = new Dotenv();
+$dotenv->usePutenv()->load(__DIR__.'/../.env');
+
 // Compile container
-$container->compile();
+$container->compile(true);
 
 // Start the console application.
 exit($container->get(Application::class)->run());

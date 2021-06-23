@@ -7,3 +7,4 @@ bin/*
 .phpunit.result.cache
 tests/mocks/*
 !tests/mocks/.gitkeep
+.env

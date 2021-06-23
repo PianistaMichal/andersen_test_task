@@ -82,9 +82,9 @@ class DepositWithdrawProcessorCommandTest extends TestCase
                     ]
                 ],
                 [
-                    'x.xx',
                     '0.00',
-                    'x.xx'
+                    '0.00',
+                    '1.35'
                 ]
             ],
             'shouldReturnFeeForPrivateWithdrawInCurrentCurrency' => [
@@ -99,7 +99,7 @@ class DepositWithdrawProcessorCommandTest extends TestCase
                     ],
                 ],
                 [
-                    'x.xx',
+                    '450.00',
                 ]
             ],
             'shouldReturnFreeFromFeeForWithdrawPrivateWith2PreviousWithdrawsNotExceedingThreshold' => [

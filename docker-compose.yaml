@@ -1,10 +1,15 @@
 services:
   web:
     build: .
-    ports:
-      - "5000:5000"
     volumes:
       - .:/code
-      - logvolume01:/var/log
-    links:
-      - redis
+    tty: true
+    stdin_open: true
+  exchange-api:
+    image: mockserver/mockserver
+    ports:
+    - 1080:1080
+    volumes:
+      - ./docker/initializerJson.json:/config/initializerJson.json
+    environment:
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/initializerJson.json

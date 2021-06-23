@@ -1,0 +1,11 @@
+{
+  "id": "string",
+  "priority": 0,
+  "httpRequest": {
+    "method": "GET",
+    "path": "/latest"
+  },
+  "httpResponse": {
+    "body": "{\"success\":true,\"timestamp\":1624439344,\"base\":\"EUR\",\"date\":\"2021-06-23\",\"rates\":{\"EUR\":1,\"USD\":2,\"JPY\":150}}"
+  }
+}
