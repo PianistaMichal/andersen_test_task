@@ -16,7 +16,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DepositWithdrawProcessorCommand extends Command
 {
-
     protected static $defaultName = 'app:deposit_withdraw_processor_command';
 
     private InputHandler $inputHandler;
@@ -52,7 +51,7 @@ class DepositWithdrawProcessorCommand extends Command
         foreach ($this->inputHandler->getData($inputStreamPath) as $id => $element) {
             $errors = $this->commandValidator->validate($element);
             if (count($errors) > 0) {
-                throw new ValidationException($id, $element->getUserId(), implode(";", $errors));
+                throw new ValidationException($id, $element->getUserId(), implode(';', $errors));
             }
             $inputElements[] = $element;
         }

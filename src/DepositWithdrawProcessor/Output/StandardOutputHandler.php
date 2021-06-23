@@ -14,13 +14,13 @@ class StandardOutputHandler implements OutputHandler
 
     public function __construct(Math $math)
     {
-        $this->lines = "";
+        $this->lines = '';
         $this->math = $math;
     }
 
     public function addOutputData(ExchangeableNumber $exchangeableNumber): void
     {
-        $this->lines .= $this->math->round($exchangeableNumber->getCurrencyAmountInCurrentCurrency()) . "\n";
+        $this->lines .= $this->math->round($exchangeableNumber->getCurrencyAmountInCurrentCurrency())."\n";
     }
 
     public function flushDataToOutputStream(): void

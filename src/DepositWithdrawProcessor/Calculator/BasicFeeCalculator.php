@@ -6,8 +6,8 @@ namespace App\DepositWithdrawProcessor\Calculator;
 
 use App\DepositWithdrawProcessor\Calculator\Exception\NoHandlerForDepositTypeException;
 use App\DepositWithdrawProcessor\Calculator\Exception\NoHandlerForUserTypeException;
-use App\DepositWithdrawProcessor\Model\DepositType;
 use App\DepositWithdrawProcessor\Model\Currency;
+use App\DepositWithdrawProcessor\Model\DepositType;
 use App\DepositWithdrawProcessor\Model\UserOperationDTO;
 use App\DepositWithdrawProcessor\Model\UserType;
 use App\DepositWithdrawProcessor\Storage\UserOperationRepository;
@@ -41,7 +41,7 @@ class BasicFeeCalculator implements FeeCalculator
             $feeForTransactions = $this->calculateForDeposit($userOperationDTO);
         }
         $this->depositWithdrawRepository->saveUserOperation($userOperationDTO);
-        if($feeForTransactions !== null) {
+        if ($feeForTransactions !== null) {
             return $this->exchangeableNumberFactory->create($feeForTransactions->getCurrencyAmountInGivenCurrency($userOperationDTO->getOperationCurrency()), $userOperationDTO->getOperationCurrency());
         }
 
@@ -88,7 +88,7 @@ class BasicFeeCalculator implements FeeCalculator
              * Money withdrawn that are crossing threshold are 300 EUR
              * Is less than current operation so we take all money that are crossing threshold to fee
              * If current operation is 200 EUR and money crossing threshold is 300 EUR
-             * We fee all money from current operation
+             * We fee all money from current operation.
              */
             $withdrawBasicThreshold = $this->exchangeableNumberFactory->create(self::WITHDRAW_PRIVATE_BASIC_THRESHOLD, Currency::EUR());
             if ($allMoneyWithdrawnFromThisWeek->greaterThan($this->exchangeableNumberFactory->create(self::WITHDRAW_PRIVATE_BASIC_THRESHOLD, Currency::EUR()))) {
@@ -99,6 +99,7 @@ class BasicFeeCalculator implements FeeCalculator
         } else {
             $commissionFee = $userOperationDTO->getExchangeableNumber()->multiply(self::WITHDRAW_PRIVATE_BASIC_CHARGE);
         }
+
         return $commissionFee;
     }
 }

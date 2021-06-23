@@ -13,7 +13,8 @@ class ExchangeRatesApiInformation implements ExchangeRatesInformation
     private string $apiToken;
     private Currency $baseCurrency;
 
-    public function __construct(Client $client, string $apiToken, Currency $baseCurrency) {
+    public function __construct(Client $client, string $apiToken, Currency $baseCurrency)
+    {
         $this->client = $client;
         $this->apiToken = $apiToken;
         $this->baseCurrency = $baseCurrency;
@@ -26,11 +27,12 @@ class ExchangeRatesApiInformation implements ExchangeRatesInformation
         $allRates = [];
         foreach (Currency::values() as $currency) {
             $value = 1;
-            if($currency !== Currency::EUR()->getValue()) {
-                $value = (string)$responseParsed['rates'][$currency->getValue()];
+            if ($currency !== Currency::EUR()->getValue()) {
+                $value = (string) $responseParsed['rates'][$currency->getValue()];
             }
             $allRates[$currency->getValue()] = $value;
         }
+
         return $allRates;
     }
 }

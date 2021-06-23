@@ -40,9 +40,10 @@ class Math
     }
 
     /**
-     * https://www.php.net/manual/en/function.round.php#114573
+     * https://www.php.net/manual/en/function.round.php#114573.
      */
-    public function round(string $number): string {
+    public function round(string $number): string
+    {
         return bcadd($number, '0', $this->scale);
     }
 }

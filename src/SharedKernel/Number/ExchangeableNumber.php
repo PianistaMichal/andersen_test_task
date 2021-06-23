@@ -57,7 +57,7 @@ class ExchangeableNumber
 
     public function getCurrencyAmountInGivenCurrency(Currency $givenCurrency): string
     {
-        if($givenCurrency->equals($this->currency)) {
+        if ($givenCurrency->equals($this->currency)) {
             return $this->currencyAmount;
         }
 
