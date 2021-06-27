@@ -18,7 +18,7 @@ class CacheableExchangeCalculator implements ExchangeCalculator
     {
         $this->exchangeRatesInformation = $exchangeRatesInformation;
         $this->math = $math;
-        $this->exchangesCache = $this->exchangeRatesInformation->getExchangeConverseRatesForAllCurrencies();
+        $this->exchangesCache = [];
     }
 
     public function getAmountFromCurrencyToBaseCurrency(
@@ -26,13 +26,22 @@ class CacheableExchangeCalculator implements ExchangeCalculator
         Currency $currencyFrom
     ): string {
         return $this->math->multiply(
-            $this->math->divide('1', $this->exchangesCache[$currencyFrom->getValue()]),
+            $this->math->divide('1', $this->getExchangeConverseRates($currencyFrom)),
             $currencyAmount
         );
     }
 
     public function getAmountFromBaseCurrencyToGivenCurrency(string $currencyAmount, Currency $currencyTo): string
     {
-        return $this->math->multiply($this->exchangesCache[$currencyTo->getValue()], $currencyAmount);
+        return $this->math->multiply($this->getExchangeConverseRates($currencyTo), $currencyAmount);
+    }
+
+    private function getExchangeConverseRates(Currency $currencyTo): string
+    {
+        if (empty($this->exchangesCache)) {
+            $this->exchangesCache = $this->exchangeRatesInformation->getExchangeConverseRatesForAllCurrencies();
+        }
+
+        return $this->exchangesCache[$currencyTo->getValue()];
     }
 }

@@ -1,27 +1,22 @@
 # Commission task andersen lab
 
-##Instalation
+## Instalation
 - To install project download clone it to Your computer
-- run `composer install` to install dependencies
+- run `docker-compose up -d`
+- run `docker exec -it app composer install` to install dependencies
 - copy .env.prod to .env and fill data
 
-##Usage
+## Usage
 There's one command to handle commission task. To run it write in console in project directory:
 
-`php bin/console app:deposit_withdraw_processor_command <filepath.csv>`
+`docker exec -it app php bin/console app:deposit_withdraw_processor_command <filepath.csv>`
 
 example:
 
-`php bin/console app:deposit_withdraw_processor_command test.csv`
+`docker exec -it app php bin/console app:deposit_withdraw_processor_command tests/mocks/example.csv`
 
-##Docker
-There's docker configuration. it's required to run functional tests. To run docker use command
-
-`docker-compose up -d`
-
-##Test
+## Test
 There's functional tests for command. First copy `.env.test` to `.env`. When docker is running You can run functional tests by this command:
-
 
 `docker exec -it app php bin/phpunit`
 

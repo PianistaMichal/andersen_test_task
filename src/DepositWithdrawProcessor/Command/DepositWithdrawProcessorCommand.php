@@ -7,8 +7,10 @@ namespace App\DepositWithdrawProcessor\Command;
 use App\DepositWithdrawProcessor\Calculator\FeeCalculator;
 use App\DepositWithdrawProcessor\Command\Validator\DepositWithdrawProcessorCommandValidator;
 use App\DepositWithdrawProcessor\Command\Validator\Exception\ValidationException;
+use App\DepositWithdrawProcessor\Input\Exception\InputException;
 use App\DepositWithdrawProcessor\Input\InputHandler;
 use App\DepositWithdrawProcessor\Output\OutputHandler;
+use App\SharedKernel\ExchangeCalculator\Strategy\Exception\CannotGetExchangeRatesInformationException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,17 +49,29 @@ class DepositWithdrawProcessorCommand extends Command
     {
         $inputStreamPath = $input->getArgument('streamPath');
         $inputElements = [];
-        foreach ($this->inputHandler->getData($inputStreamPath) as $id => $element) {
-            $errors = $this->commandValidator->validate($element);
-            if (count($errors) > 0) {
-                throw new ValidationException($id, $element->getUserId(), implode(';', $errors));
+        try {
+            foreach ($this->inputHandler->getData($inputStreamPath) as $id => $element) {
+                $errors = $this->commandValidator->validate($element);
+                if (count($errors) > 0) {
+                    throw new ValidationException($id, $element->getUserId(), implode(';', $errors));
+                }
+                $inputElements[] = $element;
             }
-            $inputElements[] = $element;
+        } catch (InputException | ValidationException $e) {
+            $output->writeln($e->getMessage());
+
+            return Command::FAILURE;
         }
 
         foreach ($inputElements as $element) {
-            $feeToPay = $this->feeCalculator->calculateFeeForTransaction($element);
-            $this->outputHandler->addOutputData($feeToPay);
+            try {
+                $feeToPay = $this->feeCalculator->calculateFeeForTransaction($element);
+                $this->outputHandler->addOutputData($feeToPay);
+            } catch (CannotGetExchangeRatesInformationException $exception) {
+                $output->writeln($exception->getMessage());
+
+                return Command::FAILURE;
+            }
         }
         $this->outputHandler->flushDataToOutputStream();
 

@@ -23,13 +23,16 @@ class BasicFeeCalculator implements FeeCalculator
 
     private UserOperationRepository $depositWithdrawRepository;
     private ExchangeableNumberFactory $exchangeableNumberFactory;
+    private Currency $baseCurrency;
 
     public function __construct(
         UserOperationRepository $depositWithdrawRepository,
-        ExchangeableNumberFactory $exchangeableNumberFactory
+        ExchangeableNumberFactory $exchangeableNumberFactory,
+        Currency $baseCurrency
     ) {
         $this->depositWithdrawRepository = $depositWithdrawRepository;
         $this->exchangeableNumberFactory = $exchangeableNumberFactory;
+        $this->baseCurrency = $baseCurrency;
     }
 
     public function calculateFeeForTransaction(UserOperationDTO $userOperationDTO): ExchangeableNumber
@@ -94,7 +97,7 @@ class BasicFeeCalculator implements FeeCalculator
              */
             $withdrawBasicThreshold = $this->exchangeableNumberFactory->create(
                 self::WITHDRAW_PRIVATE_BASIC_THRESHOLD,
-                Currency::EUR()
+                $this->baseCurrency
             );
             if ($allMoneyWithdrawnFromThisWeek->greaterThan(
                 $this->exchangeableNumberFactory->create(self::WITHDRAW_PRIVATE_BASIC_THRESHOLD, Currency::EUR())

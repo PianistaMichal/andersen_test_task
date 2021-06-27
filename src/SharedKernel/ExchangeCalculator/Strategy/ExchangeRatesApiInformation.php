@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\SharedKernel\ExchangeCalculator\Strategy;
 
 use App\DepositWithdrawProcessor\Model\Currency;
+use App\SharedKernel\ExchangeCalculator\Strategy\Exception\CannotGetExchangeRatesInformationException;
+use Exception;
 use GuzzleHttp\Client;
 
 class ExchangeRatesApiInformation implements ExchangeRatesInformation
@@ -31,7 +33,14 @@ class ExchangeRatesApiInformation implements ExchangeRatesInformation
                                            ],
                                        ]
         );
-        $responseParsed = json_decode($response->getBody()->getContents(), true);
+        try {
+            $responseParsed = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (Exception $e) {
+            throw new CannotGetExchangeRatesInformationException($e->getMessage(), $e->getCode(), $e);
+        }
+        if (!isset($responseParsed['rates'])) {
+            throw new CannotGetExchangeRatesInformationException(sprintf('Wrong format of response: %s', json_encode($responseParsed)));
+        }
         $allRates = [];
         foreach (Currency::values() as $currency) {
             $value = 1;

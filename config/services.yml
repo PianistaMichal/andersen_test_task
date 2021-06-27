@@ -35,10 +35,15 @@ services:
     arguments:
       $baseCurrency: '@base.currency'
 
+  App\DepositWithdrawProcessor\Calculator\BasicFeeCalculator:
+    arguments:
+      $baseCurrency: '@base.currency'
+
   base.currency:
     class: App\DepositWithdrawProcessor\Model\Currency
     autowire: false
     arguments: ['%base_currency%']
+
 
   App\DepositWithdrawProcessor\Calculator\FeeCalculator: '@App\DepositWithdrawProcessor\Calculator\BasicFeeCalculator'
   App\DepositWithdrawProcessor\Input\InputHandler: '@App\DepositWithdrawProcessor\Input\CsvInputHandler'
