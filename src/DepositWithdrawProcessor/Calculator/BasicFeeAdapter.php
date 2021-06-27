@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Calculator;
 
+use App\DepositWithdrawProcessor\Calculator\Exception\NoHandlerForUserTypeAndDepositTypeException;
 use App\DepositWithdrawProcessor\Calculator\Strategy\FeeFactory;
 use App\DepositWithdrawProcessor\Model\UserOperationDTO;
 use App\DepositWithdrawProcessor\Storage\UserOperationRepository;
@@ -26,6 +27,9 @@ class BasicFeeAdapter
         $this->exchangeableNumberFactory = $exchangeableNumberFactory;
     }
 
+    /**
+     * @throws NoHandlerForUserTypeAndDepositTypeException
+     */
     public function calculateFeeForTransaction(UserOperationDTO $userOperationDTO): ExchangeableNumber
     {
         $feeStrategy = $this->feeFactory->getFeeStrategyForUserTypeAndDepositType(

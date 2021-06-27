@@ -23,6 +23,9 @@ class FeeFactory
         $this->feeStrategies = $feeStrategies;
     }
 
+    /**
+     * @throws NoHandlerForUserTypeAndDepositTypeException
+     */
     public function getFeeStrategyForUserTypeAndDepositType(UserType $userType, DepositType $depositType): FeeStrategy
     {
         foreach ($this->feeStrategies as $feeStrategy) {

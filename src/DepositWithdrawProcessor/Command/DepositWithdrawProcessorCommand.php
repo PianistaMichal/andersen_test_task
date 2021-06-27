@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DepositWithdrawProcessor\Command;
 
 use App\DepositWithdrawProcessor\Calculator\BasicFeeAdapter;
+use App\DepositWithdrawProcessor\Calculator\Exception\NoHandlerForUserTypeAndDepositTypeException;
 use App\DepositWithdrawProcessor\Command\Validator\DepositWithdrawProcessorCommandValidator;
 use App\DepositWithdrawProcessor\Command\Validator\Exception\ValidationException;
 use App\DepositWithdrawProcessor\Input\Exception\InputException;
@@ -67,7 +68,7 @@ class DepositWithdrawProcessorCommand extends Command
             try {
                 $feeToPay = $this->feeAdapter->calculateFeeForTransaction($element);
                 $this->outputHandler->addOutputData($feeToPay);
-            } catch (CannotGetExchangeRatesInformationException $exception) {
+            } catch (CannotGetExchangeRatesInformationException | NoHandlerForUserTypeAndDepositTypeException $exception) {
                 $output->writeln($exception->getMessage());
 
                 return Command::FAILURE;
