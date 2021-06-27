@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Calculator\Strategy;
 
-use App\DepositWithdrawProcessor\Model\Currency;
-use App\DepositWithdrawProcessor\Model\DepositType;
+use App\DepositWithdrawProcessor\Enums\Currency;
+use App\DepositWithdrawProcessor\Enums\DepositType;
+use App\DepositWithdrawProcessor\Enums\UserType;
 use App\DepositWithdrawProcessor\Model\UserOperationDTO;
-use App\DepositWithdrawProcessor\Model\UserType;
 use App\DepositWithdrawProcessor\Storage\UserOperationRepository;
 use App\SharedKernel\Number\ExchangeableNumber;
 use App\SharedKernel\Number\ExchangeableNumberFactory;

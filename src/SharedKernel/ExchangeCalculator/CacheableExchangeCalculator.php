@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\SharedKernel\ExchangeCalculator;
 
-use App\DepositWithdrawProcessor\Model\Currency;
+use App\DepositWithdrawProcessor\Enums\Currency;
 use App\SharedKernel\ExchangeCalculator\Strategy\ExchangeRatesInformation;
 use App\SharedKernel\Math;
 

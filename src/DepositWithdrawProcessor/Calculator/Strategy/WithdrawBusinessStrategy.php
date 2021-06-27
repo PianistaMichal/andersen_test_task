@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Calculator\Strategy;
 
-use App\DepositWithdrawProcessor\Model\DepositType;
+use App\DepositWithdrawProcessor\Enums\DepositType;
+use App\DepositWithdrawProcessor\Enums\UserType;
 use App\DepositWithdrawProcessor\Model\UserOperationDTO;
-use App\DepositWithdrawProcessor\Model\UserType;
 use App\SharedKernel\Number\ExchangeableNumber;
 
 class WithdrawBusinessStrategy implements FeeStrategy

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\DepositWithdrawProcessor\Model;
+namespace App\DepositWithdrawProcessor\Enums;
 
 use MyCLabs\Enum\Enum;
 

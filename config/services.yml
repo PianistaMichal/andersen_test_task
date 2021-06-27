@@ -38,7 +38,7 @@ services:
       $baseCurrency: '@base.currency'
 
   base.currency:
-    class: App\DepositWithdrawProcessor\Model\Currency
+    class: App\DepositWithdrawProcessor\Enums\Currency
     autowire: false
     arguments: ['%base_currency%']
 

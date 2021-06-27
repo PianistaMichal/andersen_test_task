@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Input;
 
+use App\DepositWithdrawProcessor\Enums\Currency;
+use App\DepositWithdrawProcessor\Enums\DepositType;
+use App\DepositWithdrawProcessor\Enums\UserType;
 use App\DepositWithdrawProcessor\Input\Exception\CannotConvertDateTimeException;
 use App\DepositWithdrawProcessor\Input\Exception\CannotParseToEnumException;
 use App\DepositWithdrawProcessor\Input\Exception\StreamOpenFailedException;
-use App\DepositWithdrawProcessor\Model\Currency;
-use App\DepositWithdrawProcessor\Model\DepositType;
 use App\DepositWithdrawProcessor\Model\UserOperationDTO;
-use App\DepositWithdrawProcessor\Model\UserType;
 use App\SharedKernel\Number\ExchangeableNumberFactory;
 use DateTime;
 use Exception;

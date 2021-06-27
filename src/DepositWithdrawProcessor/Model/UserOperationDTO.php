@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Model;
 
+use App\DepositWithdrawProcessor\Enums\Currency;
+use App\DepositWithdrawProcessor\Enums\DepositType;
+use App\DepositWithdrawProcessor\Enums\UserType;
 use App\SharedKernel\Number\ExchangeableNumber;
 use DateTime;
 

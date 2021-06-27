@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\DepositWithdrawProcessor\Calculator\Strategy;
 
 use App\DepositWithdrawProcessor\Calculator\Exception\NoHandlerForUserTypeAndDepositTypeException;
-use App\DepositWithdrawProcessor\Model\DepositType;
-use App\DepositWithdrawProcessor\Model\UserType;
+use App\DepositWithdrawProcessor\Enums\DepositType;
+use App\DepositWithdrawProcessor\Enums\UserType;
 
 class FeeFactory
 {

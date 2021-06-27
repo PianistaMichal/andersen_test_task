@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Command\Validator;
 
-use App\DepositWithdrawProcessor\Model\Currency;
+use App\DepositWithdrawProcessor\Enums\Currency;
 use App\DepositWithdrawProcessor\Model\UserOperationDTO;
 use App\SharedKernel\Number\ExchangeableNumberFactory;
 

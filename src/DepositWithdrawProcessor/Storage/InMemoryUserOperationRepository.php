@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Storage;
 
-use App\DepositWithdrawProcessor\Model\DepositType;
+use App\DepositWithdrawProcessor\Enums\DepositType;
 use App\DepositWithdrawProcessor\Model\UserOperationDTO;
 use DateTime;
 

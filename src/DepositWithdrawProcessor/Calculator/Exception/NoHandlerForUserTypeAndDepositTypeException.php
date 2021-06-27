@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Calculator\Exception;
 
-use App\DepositWithdrawProcessor\Model\DepositType;
-use App\DepositWithdrawProcessor\Model\UserType;
+use App\DepositWithdrawProcessor\Enums\DepositType;
+use App\DepositWithdrawProcessor\Enums\UserType;
 use RuntimeException;
 
 class NoHandlerForUserTypeAndDepositTypeException extends RuntimeException
