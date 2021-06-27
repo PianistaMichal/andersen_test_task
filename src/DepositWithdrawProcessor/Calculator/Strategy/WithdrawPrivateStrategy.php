@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\DepositWithdrawProcessor\Calculator;
+namespace App\DepositWithdrawProcessor\Calculator\Strategy;
 
-use App\DepositWithdrawProcessor\Calculator\Exception\NoHandlerForDepositTypeException;
-use App\DepositWithdrawProcessor\Calculator\Exception\NoHandlerForUserTypeException;
 use App\DepositWithdrawProcessor\Model\Currency;
 use App\DepositWithdrawProcessor\Model\DepositType;
 use App\DepositWithdrawProcessor\Model\UserOperationDTO;
@@ -14,11 +12,9 @@ use App\DepositWithdrawProcessor\Storage\UserOperationRepository;
 use App\SharedKernel\Number\ExchangeableNumber;
 use App\SharedKernel\Number\ExchangeableNumberFactory;
 
-class BasicFeeCalculator implements FeeCalculator
+class WithdrawPrivateStrategy implements FeeStrategy
 {
-    private const DEPOSIT_BASIC_CHARGE = '0.0003';
     private const WITHDRAW_PRIVATE_BASIC_CHARGE = '0.003';
-    private const WITHDRAW_BUSINESS_BASIC_CHARGE = '0.005';
     private const WITHDRAW_PRIVATE_BASIC_THRESHOLD = '1000';
 
     private UserOperationRepository $depositWithdrawRepository;
@@ -35,37 +31,7 @@ class BasicFeeCalculator implements FeeCalculator
         $this->baseCurrency = $baseCurrency;
     }
 
-    public function calculateFeeForTransaction(UserOperationDTO $userOperationDTO): ExchangeableNumber
-    {
-        $feeForTransactions = null;
-        if ($userOperationDTO->getDepositType()->equals(DepositType::WITHDRAW())) {
-            $feeForTransactions = $this->calculateForWithdraw($userOperationDTO);
-        } elseif ($userOperationDTO->getDepositType()->equals(DepositType::DEPOSIT())) {
-            $feeForTransactions = $this->calculateForDeposit($userOperationDTO);
-        }
-        $this->depositWithdrawRepository->saveUserOperation($userOperationDTO);
-        if ($feeForTransactions !== null) {
-            return $this->exchangeableNumberFactory->create(
-                $feeForTransactions->getCurrencyAmountInGivenCurrency($userOperationDTO->getOperationCurrency()),
-                $userOperationDTO->getOperationCurrency()
-            );
-        }
-
-        throw new NoHandlerForDepositTypeException($userOperationDTO->getDepositType());
-    }
-
-    private function calculateForWithdraw(UserOperationDTO $userOperationDTO): ExchangeableNumber
-    {
-        if ($userOperationDTO->getUserType()->equals(UserType::BUSINESS())) {
-            return $userOperationDTO->getExchangeableNumber()->multiply(self::WITHDRAW_BUSINESS_BASIC_CHARGE);
-        } elseif ($userOperationDTO->getUserType()->equals(UserType::PRIVATE())) {
-            return $this->calculateForWithdrawAndPrivate($userOperationDTO);
-        }
-
-        throw new NoHandlerForUserTypeException($userOperationDTO->getUserType());
-    }
-
-    private function calculateForWithdrawAndPrivate(UserOperationDTO $userOperationDTO): ExchangeableNumber
+    public function calculateFee(UserOperationDTO $userOperationDTO): ExchangeableNumber
     {
         $userOperations = $this->depositWithdrawRepository->findAllCreatedAtBetweenAndDepositTypeWithdrawAndUserId(
             $userOperationDTO->getCreatedAt()->modify('tomorrow')->modify('previous monday'),
@@ -115,8 +81,17 @@ class BasicFeeCalculator implements FeeCalculator
         return $commissionFee;
     }
 
-    private function calculateForDeposit(UserOperationDTO $userOperationDTO): ExchangeableNumber
+    public function getWorkingOnDepositType(): array
     {
-        return $userOperationDTO->getExchangeableNumber()->multiply(self::DEPOSIT_BASIC_CHARGE);
+        return [
+            DepositType::WITHDRAW(),
+        ];
+    }
+
+    public function getWorkingOnUserType(): array
+    {
+        return [
+            UserType::PRIVATE(),
+        ];
     }
 }

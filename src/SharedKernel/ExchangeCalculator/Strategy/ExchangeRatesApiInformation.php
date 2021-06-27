@@ -24,14 +24,15 @@ class ExchangeRatesApiInformation implements ExchangeRatesInformation
 
     public function getExchangeConverseRatesForAllCurrencies(): array
     {
-        $response = $this->client->get('latest',
-                                       [
-                                           'query' => [
-                                               'access_key' => $this->apiToken,
-                                               'base' => $this->baseCurrency->getValue(),
-                                               'symbols' => implode(',', Currency::values()),
-                                           ],
-                                       ]
+        $response = $this->client->get(
+            'latest',
+            [
+                'query' => [
+                    'access_key' => $this->apiToken,
+                    'base' => $this->baseCurrency->getValue(),
+                    'symbols' => implode(',', Currency::values()),
+                ],
+            ]
         );
         try {
             $responseParsed = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Command;
 
-use App\DepositWithdrawProcessor\Calculator\FeeCalculator;
+use App\DepositWithdrawProcessor\Calculator\BasicFeeAdapter;
 use App\DepositWithdrawProcessor\Command\Validator\DepositWithdrawProcessorCommandValidator;
 use App\DepositWithdrawProcessor\Command\Validator\Exception\ValidationException;
 use App\DepositWithdrawProcessor\Input\Exception\InputException;
@@ -23,18 +23,18 @@ class DepositWithdrawProcessorCommand extends Command
     private InputHandler $inputHandler;
     private OutputHandler $outputHandler;
     private DepositWithdrawProcessorCommandValidator $commandValidator;
-    private FeeCalculator $feeCalculator;
+    private BasicFeeAdapter $feeAdapter;
 
     public function __construct(
         InputHandler $inputHandler,
         OutputHandler $outputHandler,
         DepositWithdrawProcessorCommandValidator $commandValidator,
-        FeeCalculator $feeCalculator
+        BasicFeeAdapter $feeAdapter
     ) {
         $this->inputHandler = $inputHandler;
         $this->outputHandler = $outputHandler;
         $this->commandValidator = $commandValidator;
-        $this->feeCalculator = $feeCalculator;
+        $this->feeAdapter = $feeAdapter;
         parent::__construct(self::$defaultName);
     }
 
@@ -65,7 +65,7 @@ class DepositWithdrawProcessorCommand extends Command
 
         foreach ($inputElements as $element) {
             try {
-                $feeToPay = $this->feeCalculator->calculateFeeForTransaction($element);
+                $feeToPay = $this->feeAdapter->calculateFeeForTransaction($element);
                 $this->outputHandler->addOutputData($feeToPay);
             } catch (CannotGetExchangeRatesInformationException $exception) {
                 $output->writeln($exception->getMessage());

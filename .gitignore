@@ -8,4 +8,4 @@ bin/*
 tests/mocks/*
 !tests/mocks/.gitkeep
 .env
-!test/mocks/example.csv
+!tests/mocks/example.csv

@@ -16,6 +16,8 @@ services:
   _instanceof:
     Symfony\Component\Console\Command\Command:
       tags: [ 'command' ]
+    App\DepositWithdrawProcessor\Calculator\Strategy\FeeStrategy:
+      tags: [ 'fee_strategy' ]
 
   App\Application:
     public: true
@@ -35,17 +37,19 @@ services:
     arguments:
       $baseCurrency: '@base.currency'
 
-  App\DepositWithdrawProcessor\Calculator\BasicFeeCalculator:
-    arguments:
-      $baseCurrency: '@base.currency'
-
   base.currency:
     class: App\DepositWithdrawProcessor\Model\Currency
     autowire: false
     arguments: ['%base_currency%']
 
+  App\DepositWithdrawProcessor\Calculator\Strategy\FeeFactory:
+    arguments:
+      - !tagged_iterator fee_strategy
 
-  App\DepositWithdrawProcessor\Calculator\FeeCalculator: '@App\DepositWithdrawProcessor\Calculator\BasicFeeCalculator'
+  App\DepositWithdrawProcessor\Calculator\Strategy\WithdrawPrivateStrategy:
+    arguments:
+      $baseCurrency: '@base.currency'
+
   App\DepositWithdrawProcessor\Input\InputHandler: '@App\DepositWithdrawProcessor\Input\CsvInputHandler'
   App\DepositWithdrawProcessor\Output\OutputHandler: '@App\DepositWithdrawProcessor\Output\StandardOutputHandler'
   App\DepositWithdrawProcessor\Storage\UserOperationRepository: '@App\DepositWithdrawProcessor\Storage\InMemoryUserOperationRepository'

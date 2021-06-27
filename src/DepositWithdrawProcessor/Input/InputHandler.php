@@ -10,9 +10,9 @@ use App\DepositWithdrawProcessor\Model\UserOperationDTO;
 interface InputHandler
 {
     /**
-     * @throws InputException
-     *
      * @return UserOperationDTO[]
+     *
+     * @throws InputException
      */
     public function getData(string $streamName): iterable;
 }
