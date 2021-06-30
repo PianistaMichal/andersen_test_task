@@ -8,6 +8,7 @@ use App\DepositWithdrawProcessor\Calculator\Exception\NoHandlerForUserTypeAndDep
 use App\DepositWithdrawProcessor\Calculator\Strategy\FeeFactory;
 use App\DepositWithdrawProcessor\Model\UserOperationDTO;
 use App\DepositWithdrawProcessor\Storage\UserOperationRepository;
+use App\SharedKernel\ExchangeCalculator\Strategy\Exception\CannotGetExchangeRatesInformationException;
 use App\SharedKernel\Number\ExchangeableNumber;
 use App\SharedKernel\Number\ExchangeableNumberFactory;
 
@@ -28,21 +29,27 @@ class BasicFeeAdapter
     }
 
     /**
+     * @throws CannotGetExchangeRatesInformationException
      * @throws NoHandlerForUserTypeAndDepositTypeException
      */
     public function calculateFeeForTransaction(UserOperationDTO $userOperationDTO): ExchangeableNumber
     {
-        $feeStrategy = $this->feeFactory->getFeeStrategyForUserTypeAndDepositType(
-            $userOperationDTO->getUserType(),
-            $userOperationDTO->getDepositType()
-        );
+        try {
+            $feeStrategy = $this->feeFactory->getFeeStrategyForUserTypeAndDepositType(
+                $userOperationDTO->getUserType(),
+                $userOperationDTO->getDepositType()
+            );
 
-        $fee = $feeStrategy->calculateFee($userOperationDTO);
-        $this->depositWithdrawRepository->saveUserOperation($userOperationDTO);
+            $fee = $feeStrategy->calculateFee($userOperationDTO);
 
-        return $this->exchangeableNumberFactory->create(
-            $fee->getCurrencyAmountInGivenCurrency($userOperationDTO->getOperationCurrency()),
-            $userOperationDTO->getOperationCurrency()
-        );
+            return $this->exchangeableNumberFactory->create(
+                $fee->getCurrencyAmountInGivenCurrency($userOperationDTO->getOperationCurrency()),
+                $userOperationDTO->getOperationCurrency()
+            );
+        } catch (CannotGetExchangeRatesInformationException | NoHandlerForUserTypeAndDepositTypeException $exception) {
+            throw $exception;
+        } finally {
+            $this->depositWithdrawRepository->saveUserOperation($userOperationDTO);
+        }
     }
 }

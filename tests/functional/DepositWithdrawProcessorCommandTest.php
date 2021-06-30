@@ -10,46 +10,6 @@ class DepositWithdrawProcessorCommandTest extends TestCase
 {
     /**
      * @test
-     */
-    public function shouldNotValidateWhenValueLowerThan0(): void
-    {
-        $this->writeToFile([[
-            '2016-01-06',
-            '2',
-            'business',
-            'withdraw',
-            '-10.00',
-            'EUR'
-        ]]);
-
-        $output=null;
-        $retval=null;
-        exec('php bin/console app:deposit_withdraw_processor_command tests/mocks/file.csv', $output, $retval);
-        self::assertNotEquals(0, $retval);
-    }
-
-    /**
-     * @test
-     */
-    public function shouldNotValidateWhenCurrencyNotCorrect(): void
-    {
-        $this->writeToFile([[
-            '2016-01-06',
-            '2',
-            'business',
-            'withdraw',
-            '10.00',
-            'EUR123'
-        ]]);
-
-        $output=null;
-        $retval=null;
-        exec('php bin/console app:deposit_withdraw_processor_command tests/mocks/file.csv', $output, $retval);
-        self::assertNotEquals(0, $retval);
-    }
-
-    /**
-     * @test
      * @dataProvider data
      */
     public function shouldAssertFees(array $inputData, array $expectedValues): void
@@ -121,7 +81,7 @@ class DepositWithdrawProcessorCommandTest extends TestCase
                 ],
                 [
                     '0.00',
-                    '0.00',
+                    '0',
                     '1.35'
                 ]
             ],
@@ -137,7 +97,7 @@ class DepositWithdrawProcessorCommandTest extends TestCase
                     ],
                 ],
                 [
-                    '450.00',
+                    '450',
                 ]
             ],
             'shouldReturnFreeFromFeeForWithdrawPrivateWith2PreviousWithdrawsNotExceedingThreshold' => [
@@ -361,6 +321,78 @@ class DepositWithdrawProcessorCommandTest extends TestCase
                     '0.00',
                     '0.00',
                     '0.30'
+                ]
+            ],
+            'shouldContinueWhenCurrencyIsNotANumber' => [
+                [
+                    [
+                        '2016-01-04',
+                        '1',
+                        'private',
+                        'withdraw',
+                        'asd.00',
+                        'EUR'
+                    ],
+                    [
+                        '2016-01-04',
+                        '2',
+                        'private',
+                        'withdraw',
+                        '200.00',
+                        'EUR'
+                    ],
+                ],
+                [
+                    'In row: 0, there is error: Operation currency amount is not a number',
+                    '0.00'
+                ]
+            ],
+            'shouldContinueWhenCurrencyIsLowerThan0' => [
+                [
+                    [
+                        '2016-01-04',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '-100.00',
+                        'EUR'
+                    ],
+                    [
+                        '2016-01-04',
+                        '2',
+                        'private',
+                        'withdraw',
+                        '200.00',
+                        'EUR'
+                    ],
+                ],
+                [
+                    'In row: 0, there is error: Operation currency amount is lower than 0',
+                    '0.00'
+                ]
+            ],
+            'shouldContinueWhenCurrencyIsNotCorrect' => [
+                [
+                    [
+                        '2016-01-04',
+                        '1',
+                        'private',
+                        'withdraw',
+                        '100.00',
+                        'EUR123'
+                    ],
+                    [
+                        '2016-01-04',
+                        '2',
+                        'private',
+                        'withdraw',
+                        '200.00',
+                        'EUR'
+                    ],
+                ],
+                [
+                    "In row: 0, there is error: Value 'EUR123' is not part of the enum App\DepositWithdrawProcessor\Enums\Currency",
+                    '0.00'
                 ]
             ]
         ];

@@ -9,7 +9,7 @@ use App\DepositWithdrawProcessor\Calculator\Exception\NoHandlerForUserTypeAndDep
 use App\DepositWithdrawProcessor\Command\Validator\DepositWithdrawProcessorCommandValidator;
 use App\DepositWithdrawProcessor\Command\Validator\Exception\ValidationException;
 use App\DepositWithdrawProcessor\Input\Exception\InputException;
-use App\DepositWithdrawProcessor\Input\InputHandler;
+use App\DepositWithdrawProcessor\Input\InputHandlerFactory;
 use App\DepositWithdrawProcessor\Output\OutputHandler;
 use App\SharedKernel\ExchangeCalculator\Strategy\Exception\CannotGetExchangeRatesInformationException;
 use Symfony\Component\Console\Command\Command;
@@ -21,18 +21,18 @@ class DepositWithdrawProcessorCommand extends Command
 {
     protected static $defaultName = 'app:deposit_withdraw_processor_command';
 
-    private InputHandler $inputHandler;
+    private InputHandlerFactory $inputHandlerFactory;
     private OutputHandler $outputHandler;
     private DepositWithdrawProcessorCommandValidator $commandValidator;
     private BasicFeeAdapter $feeAdapter;
 
     public function __construct(
-        InputHandler $inputHandler,
+        InputHandlerFactory $inputHandlerFactory,
         OutputHandler $outputHandler,
         DepositWithdrawProcessorCommandValidator $commandValidator,
         BasicFeeAdapter $feeAdapter
     ) {
-        $this->inputHandler = $inputHandler;
+        $this->inputHandlerFactory = $inputHandlerFactory;
         $this->outputHandler = $outputHandler;
         $this->commandValidator = $commandValidator;
         $this->feeAdapter = $feeAdapter;
@@ -49,32 +49,32 @@ class DepositWithdrawProcessorCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $inputStreamPath = $input->getArgument('streamPath');
-        $inputElements = [];
-        try {
-            foreach ($this->inputHandler->getData($inputStreamPath) as $id => $element) {
+        $iterator = $this->inputHandlerFactory->create($inputStreamPath);
+
+        while ($iterator->valid()) {
+            $element = null;
+            try {
+                $element = $iterator->current();
                 $errors = $this->commandValidator->validate($element);
                 if (count($errors) > 0) {
-                    throw new ValidationException($id, $element->getUserId(), implode(';', $errors));
+                    throw new ValidationException(implode(';', $errors));
                 }
-                $inputElements[] = $element;
+            } catch (InputException | ValidationException $e) {
+                $output->writeln(sprintf('In row: %s, there is error: %s', $iterator->key(), $e->getMessage()));
+                $element = null;
             }
-        } catch (InputException | ValidationException $e) {
-            $output->writeln($e->getMessage());
 
-            return Command::FAILURE;
-        }
-
-        foreach ($inputElements as $element) {
-            try {
-                $feeToPay = $this->feeAdapter->calculateFeeForTransaction($element);
-                $this->outputHandler->addOutputData($feeToPay);
-            } catch (CannotGetExchangeRatesInformationException | NoHandlerForUserTypeAndDepositTypeException $exception) {
-                $output->writeln($exception->getMessage());
-
-                return Command::FAILURE;
+            if ($element !== null) {
+                try {
+                    $feeToPay = $this->feeAdapter->calculateFeeForTransaction($element);
+                    $this->outputHandler->addOutputData($feeToPay);
+                } catch (CannotGetExchangeRatesInformationException | NoHandlerForUserTypeAndDepositTypeException $e) {
+                    $output->writeln(sprintf('In row: %s, there is error: %s', $iterator->key(), $e->getMessage()));
+                }
             }
+
+            $iterator->next();
         }
-        $this->outputHandler->flushDataToOutputStream();
 
         return Command::SUCCESS;
     }

@@ -8,6 +8,7 @@ use App\DepositWithdrawProcessor\Enums\Currency;
 use App\SharedKernel\ExchangeCalculator\Strategy\Exception\CannotGetExchangeRatesInformationException;
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
 class ExchangeRatesApiInformation implements ExchangeRatesInformation
 {
@@ -24,16 +25,21 @@ class ExchangeRatesApiInformation implements ExchangeRatesInformation
 
     public function getExchangeConverseRatesForAllCurrencies(): array
     {
-        $response = $this->client->get(
-            'latest',
-            [
-                'query' => [
-                    'access_key' => $this->apiToken,
-                    'base' => $this->baseCurrency->getValue(),
-                    'symbols' => implode(',', Currency::values()),
-                ],
-            ]
-        );
+        try {
+            $response = $this->client->get(
+                'latest',
+                [
+                    'query' => [
+                        'access_key' => $this->apiToken,
+                        'base' => $this->baseCurrency->getValue(),
+                        'symbols' => implode(',', Currency::values()),
+                    ],
+                ]
+            );
+        } catch (GuzzleException $e) {
+            throw new CannotGetExchangeRatesInformationException($e->getMessage(), $e->getCode(), $e);
+        }
+
         try {
             $responseParsed = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         } catch (Exception $e) {

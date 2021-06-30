@@ -25,7 +25,10 @@ class DepositWithdrawProcessorCommandValidator
     public function validate(UserOperationDTO $userOperationDTO): array
     {
         $errors = [];
-        if (!$userOperationDTO->getExchangeableNumber()->greaterThanEqual(
+
+        if (!is_numeric($userOperationDTO->getExchangeableNumber()->getCurrencyAmountInCurrentCurrency())) {
+            $errors[] = 'Operation currency amount is not a number';
+        } elseif (!$userOperationDTO->getExchangeableNumber()->greaterThanEqual(
             $this->exchangeableNumberFactory->create('0', $this->baseCurrency)
         )) {
             $errors[] = 'Operation currency amount is lower than 0';

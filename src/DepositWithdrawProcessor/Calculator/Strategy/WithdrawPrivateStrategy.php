@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Calculator\Strategy;
 
+use App\DepositWithdrawProcessor\Calculator\Exception\NoHandlerForUserTypeAndDepositTypeException;
 use App\DepositWithdrawProcessor\Enums\Currency;
 use App\DepositWithdrawProcessor\Enums\DepositType;
 use App\DepositWithdrawProcessor\Enums\UserType;
 use App\DepositWithdrawProcessor\Model\UserOperationDTO;
 use App\DepositWithdrawProcessor\Storage\UserOperationRepository;
+use App\SharedKernel\ExchangeCalculator\Strategy\Exception\CannotGetExchangeRatesInformationException;
 use App\SharedKernel\Number\ExchangeableNumber;
 use App\SharedKernel\Number\ExchangeableNumberFactory;
 
@@ -31,6 +33,10 @@ class WithdrawPrivateStrategy implements FeeStrategy
         $this->baseCurrency = $baseCurrency;
     }
 
+    /**
+     * @throws CannotGetExchangeRatesInformationException
+     * @throws NoHandlerForUserTypeAndDepositTypeException
+     */
     public function calculateFee(UserOperationDTO $userOperationDTO): ExchangeableNumber
     {
         $userOperations = $this->depositWithdrawRepository->findAllCreatedAtBetweenAndDepositTypeWithdrawAndUserId(

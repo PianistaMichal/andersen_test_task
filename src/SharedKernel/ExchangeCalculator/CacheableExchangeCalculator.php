@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\SharedKernel\ExchangeCalculator;
 
 use App\DepositWithdrawProcessor\Enums\Currency;
+use App\SharedKernel\ExchangeCalculator\Strategy\Exception\CannotGetExchangeRatesInformationException;
 use App\SharedKernel\ExchangeCalculator\Strategy\ExchangeRatesInformation;
 use App\SharedKernel\Math;
 
@@ -21,6 +22,9 @@ class CacheableExchangeCalculator implements ExchangeCalculator
         $this->exchangesCache = [];
     }
 
+    /**
+     * @throws CannotGetExchangeRatesInformationException
+     */
     public function getAmountFromCurrencyToBaseCurrency(
         string $currencyAmount,
         Currency $currencyFrom
@@ -31,6 +35,9 @@ class CacheableExchangeCalculator implements ExchangeCalculator
         );
     }
 
+    /**
+     * @throws CannotGetExchangeRatesInformationException
+     */
     private function getExchangeConverseRates(Currency $currencyTo): string
     {
         if (empty($this->exchangesCache)) {
@@ -40,6 +47,9 @@ class CacheableExchangeCalculator implements ExchangeCalculator
         return $this->exchangesCache[$currencyTo->getValue()];
     }
 
+    /**
+     * @throws CannotGetExchangeRatesInformationException
+     */
     public function getAmountFromBaseCurrencyToGivenCurrency(string $currencyAmount, Currency $currencyTo): string
     {
         return $this->math->multiply($this->getExchangeConverseRates($currencyTo), $currencyAmount);

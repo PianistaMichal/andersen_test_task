@@ -19,41 +19,86 @@ use UnexpectedValueException;
 class CsvInputHandler implements InputHandler
 {
     private ExchangeableNumberFactory $exchangeableNumberFactory;
+    private array $currentRow;
+    private int $currentPosition;
+    private $handle;
+    private string $streamName;
 
-    public function __construct(ExchangeableNumberFactory $exchangeableNumberFactory)
+    /**
+     * @throws StreamOpenFailedException
+     */
+    public function __construct(ExchangeableNumberFactory $exchangeableNumberFactory, string $streamName)
     {
         $this->exchangeableNumberFactory = $exchangeableNumberFactory;
+        $this->streamName = $streamName;
+        $this->rewind();
     }
 
-    public function getData(string $streamName): iterable
+    /**
+     * @throws StreamOpenFailedException
+     */
+    public function rewind(): void
     {
-        if (!file_exists($streamName)) {
-            throw new StreamOpenFailedException(sprintf('File not found: %s', $streamName));
+        if ($this->handle !== false && $this->handle !== null) {
+            fclose($this->handle);
         }
-        $handle = fopen($streamName, 'rb');
-        if ($handle === false) {
-            throw new StreamOpenFailedException(sprintf('File cannot be open: %s', $streamName));
+        if (!file_exists($this->streamName)) {
+            throw new StreamOpenFailedException(sprintf('File not found: %s', $this->streamName));
         }
-        while (($row = fgetcsv($handle)) !== false) {
-            try {
-                $datetime = new DateTime($row[0]);
-            } catch (Exception $e) {
-                throw new CannotConvertDateTimeException($e->getMessage(), $e->getCode(), $e);
-            }
-            try {
-                $userType = UserType::from(strtoupper($row[2]));
-                $depositType = DepositType::from(strtoupper($row[3]));
-            } catch (UnexpectedValueException $e) {
-                throw new CannotParseToEnumException($e->getMessage(), $e->getCode(), $e);
-            }
-            yield new UserOperationDTO(
-                $datetime,
-                (int) $row[1],
-                $userType,
-                $depositType,
-                $this->exchangeableNumberFactory->create($row[4], Currency::from(strtoupper($row[5]))),
-                Currency::from(strtoupper($row[5]))
-            );
+        $this->handle = fopen($this->streamName, 'rb');
+        if ($this->handle === false) {
+            throw new StreamOpenFailedException(sprintf('File cannot be open: %s', $this->streamName));
         }
+        $this->currentPosition = 0;
+        $this->currentRow = fgetcsv($this->handle);
+    }
+
+    /**
+     * @throws CannotConvertDateTimeException
+     * @throws CannotParseToEnumException
+     */
+    public function current(): UserOperationDTO
+    {
+        try {
+            $datetime = new DateTime($this->currentRow[0]);
+        } catch (Exception $e) {
+            throw new CannotConvertDateTimeException($e->getMessage(), $e->getCode(), $e);
+        }
+        try {
+            $userType = UserType::from(strtoupper($this->currentRow[2]));
+            $depositType = DepositType::from(strtoupper($this->currentRow[3]));
+            $currentCurrency = Currency::from(strtoupper($this->currentRow[5]));
+        } catch (UnexpectedValueException $e) {
+            throw new CannotParseToEnumException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        return new UserOperationDTO(
+            $datetime,
+            (int) $this->currentRow[1],
+            $userType,
+            $depositType,
+            $this->exchangeableNumberFactory->create($this->currentRow[4], $currentCurrency),
+            $currentCurrency
+        );
+    }
+
+    public function next(): void
+    {
+        ++$this->currentPosition;
+        $row = fgetcsv($this->handle);
+        if ($row === false) {
+            $row = [];
+        }
+        $this->currentRow = $row;
+    }
+
+    public function key(): int
+    {
+        return $this->currentPosition;
+    }
+
+    public function valid(): bool
+    {
+        return !empty($this->currentRow);
     }
 }

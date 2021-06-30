@@ -6,6 +6,7 @@ namespace App\SharedKernel\Number;
 
 use App\DepositWithdrawProcessor\Enums\Currency;
 use App\SharedKernel\ExchangeCalculator\ExchangeCalculator;
+use App\SharedKernel\ExchangeCalculator\Strategy\Exception\CannotGetExchangeRatesInformationException;
 use App\SharedKernel\Math;
 
 class ExchangeableNumber
@@ -44,9 +45,17 @@ class ExchangeableNumber
         );
     }
 
+    /**
+     * @throws CannotGetExchangeRatesInformationException
+     */
     public function getCurrencyAmountInBaseCurrency(): string
     {
         return $this->exchangeCalculator->getAmountFromCurrencyToBaseCurrency($this->currencyAmount, $this->currency);
+    }
+
+    public function getCurrentCurrency(): Currency
+    {
+        return $this->currency;
     }
 
     public function multiply(string $value): ExchangeableNumber
@@ -106,6 +115,9 @@ class ExchangeableNumber
             ) !== -1;
     }
 
+    /**
+     * @throws CannotGetExchangeRatesInformationException
+     */
     public function getCurrencyAmountInGivenCurrency(Currency $givenCurrency): string
     {
         if ($givenCurrency->equals($this->currency)) {

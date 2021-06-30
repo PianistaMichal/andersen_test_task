@@ -16,6 +16,9 @@ $loader->load(__DIR__ . '/../config/services.yml');
 
 $dotenv = new Dotenv();
 $dotenv->usePutenv()->load(__DIR__.'/../.env');
+if(strtoupper(getenv('APP_ENV')) === strtoupper('test')) {
+    $dotenv->usePutenv()->load(__DIR__.'/../.env.test');
+}
 
 // Compile container
 $container->compile(true);

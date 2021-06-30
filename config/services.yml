@@ -24,6 +24,11 @@ services:
     arguments:
       - !tagged_iterator command
 
+  currency.jpy:
+    class: App\DepositWithdrawProcessor\Enums\Currency
+    autowire: false
+    arguments: ['JPY']
+
   App\SharedKernel\ExchangeCalculator\Strategy\ExchangeRatesApiInformation:
     arguments:
       $apiToken: '%exchange_api_key%'
@@ -49,6 +54,11 @@ services:
   App\DepositWithdrawProcessor\Calculator\Strategy\WithdrawPrivateStrategy:
     arguments:
       $baseCurrency: '@base.currency'
+
+  App\SharedKernel\RoundToDecimalsHelper:
+    arguments:
+      - '%math_round_precision%'
+      - ['@currency.jpy']
 
   App\DepositWithdrawProcessor\Input\InputHandler: '@App\DepositWithdrawProcessor\Input\CsvInputHandler'
   App\DepositWithdrawProcessor\Output\OutputHandler: '@App\DepositWithdrawProcessor\Output\StandardOutputHandler'

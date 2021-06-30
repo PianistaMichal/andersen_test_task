@@ -4,27 +4,26 @@ declare(strict_types=1);
 
 namespace App\DepositWithdrawProcessor\Output;
 
-use App\SharedKernel\Math;
 use App\SharedKernel\Number\ExchangeableNumber;
+use App\SharedKernel\RoundToDecimalsHelper;
 
 class StandardOutputHandler implements OutputHandler
 {
-    private array $lines;
-    private Math $math;
+    private RoundToDecimalsHelper $roundToDecimalsHelper;
 
-    public function __construct(Math $math)
+    public function __construct(RoundToDecimalsHelper $roundToDecimalsHelper)
     {
-        $this->lines = [];
-        $this->math = $math;
+        $this->roundToDecimalsHelper = $roundToDecimalsHelper;
     }
 
     public function addOutputData(ExchangeableNumber $exchangeableNumber): void
     {
-        $this->lines[] = $this->math->round($exchangeableNumber->getCurrencyAmountInCurrentCurrency());
-    }
-
-    public function flushDataToOutputStream(): void
-    {
-        fwrite(STDOUT, implode("\n", $this->lines));
+        fwrite(
+            STDOUT,
+            $this->roundToDecimalsHelper->round(
+                $exchangeableNumber->getCurrencyAmountInCurrentCurrency(),
+                $exchangeableNumber->getCurrentCurrency()
+            )."\n"
+        );
     }
 }
