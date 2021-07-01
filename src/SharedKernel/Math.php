@@ -8,12 +8,10 @@ class Math
 {
     private const BASIC_SCALE_FOR_CALCULATIONS = 20;
     private int $basicScaleForCalculations;
-    private int $roundPrecision;
 
     public function __construct(int $roundPrecision)
     {
         $this->basicScaleForCalculations = $roundPrecision + self::BASIC_SCALE_FOR_CALCULATIONS;
-        $this->roundPrecision = $roundPrecision;
     }
 
     public function add(string $leftOperand, string $rightOperand): string
